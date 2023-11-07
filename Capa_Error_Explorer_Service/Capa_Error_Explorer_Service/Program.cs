@@ -1,10 +1,17 @@
 using Capa_Error_Explorer_Service;
+using Microsoft.Extensions.Logging.Configuration;
+using Microsoft.Extensions.Logging.EventLog;
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
-    {
-        services.AddHostedService<Worker>();
-    })
-    .Build();
+HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddWindowsService(options =>
+{
+    options.ServiceName = "Capa Error Explorer Service";
+});
 
-await host.RunAsync();
+LoggerProviderOptions.RegisterProviderOptions<
+    EventLogSettings, EventLogLoggerProvider>(builder.Services);
+
+builder.Services.AddHostedService<WindowsBackgroundService>();
+
+IHost host = builder.Build();
+host.Run();
