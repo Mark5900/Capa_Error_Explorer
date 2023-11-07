@@ -3,6 +3,7 @@ namespace Capa_Error_Explorer_Service
     public class WindowsBackgroundService : BackgroundService
     {
         private readonly ILogger<WindowsBackgroundService> _logger;
+        private readonly FileLogging _fileLogging = new FileLogging();
 
         public WindowsBackgroundService(ILogger<WindowsBackgroundService> logger)
         {
@@ -16,6 +17,7 @@ namespace Capa_Error_Explorer_Service
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     _logger.LogInformation("WindowsBackgroundService running at: {time}", DateTimeOffset.Now);
+                    _fileLogging.WriteLine($"WindowsBackgroundService running at: {DateTimeOffset.Now}");
                     await Task.Delay(1000, stoppingToken);
                 }
             }
@@ -27,6 +29,7 @@ namespace Capa_Error_Explorer_Service
             catch (Exception ex)
             {
                 _logger.LogError(ex, "{Message}", ex.Message);
+                _fileLogging.WriteLine($"{ex.Message}");
 
                 // Terminates this process and returns an exit code to the operating system.
                 // This is required to avoid the 'BackgroundServiceExceptionBehavior', which
