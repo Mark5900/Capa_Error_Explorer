@@ -14,11 +14,15 @@ namespace Capa_Error_Explorer_Service
         {
             try
             {
+                GlobalSettings globalSettings = new GlobalSettings();
+                _fileLogging.WriteLine($"CapaSQLServer: {globalSettings.CapaSQLServer}");
+                _fileLogging.WriteLine($"CapaSQLDB: {globalSettings.CapaSQLDB}");
+                _fileLogging.WriteLine($"ErrorExplorerSQLServer: {globalSettings.ErrorExplorerSQLServer}");
+                _fileLogging.WriteLine($"ErrorExplorerSQLDB: {globalSettings.ErrorExplorerSQLDB}");
+
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    _logger.LogInformation("WindowsBackgroundService running at: {time}", DateTimeOffset.Now);
-                    _fileLogging.WriteLine($"WindowsBackgroundService running at: {DateTimeOffset.Now}");
-                    await Task.Delay(1000, stoppingToken);
+                    
                 }
             }
             catch (OperationCanceledException)
