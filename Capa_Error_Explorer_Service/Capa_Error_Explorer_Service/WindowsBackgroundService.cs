@@ -29,7 +29,6 @@ namespace Capa_Error_Explorer_Service
             catch (Exception ex)
             {
                 _logger.LogError(ex, "{Message}", ex.Message);
-                _fileLogging.WriteLine($"{ex.Message}");
 
                 // Terminates this process and returns an exit code to the operating system.
                 // This is required to avoid the 'BackgroundServiceExceptionBehavior', which

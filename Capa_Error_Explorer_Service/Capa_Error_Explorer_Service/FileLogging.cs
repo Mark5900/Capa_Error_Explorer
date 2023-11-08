@@ -15,13 +15,15 @@ namespace Capa_Error_Explorer_Service
             if (!System.IO.Directory.Exists(_path))
             {
                 System.IO.Directory.CreateDirectory(_path);
+                this.WriteLine("Directory created");
             }
         }
 
         public void WriteLine(string message)
         {
-            StreamWriter writer = new StreamWriter($"{_path}Capa_Error_Explorer_Service-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}.log");
+            StreamWriter writer = new StreamWriter($"{_path}Capa_Error_Explorer_Service-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}.log", append: true);
             writer.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")} : {message}");
+            writer.Close();
         }
     }
 }
