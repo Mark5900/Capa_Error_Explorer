@@ -22,7 +22,18 @@ namespace Capa_Error_Explorer_Service
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    
+                    Capa oCapa = new Capa();
+                    bool bStatus = true;
+
+                    bStatus = oCapa.SetDatabaseSettings(globalSettings.CapaSQLServer, globalSettings.CapaSQLDB);
+                    if (bStatus)
+                    {
+                        _fileLogging.WriteLine($"SetDatabaseSettings: {bStatus}");
+                    }
+                    else
+                    {
+                        _fileLogging.WriteLine($"SetDatabaseSettings: {bStatus}");
+                    }
                 }
             }
             catch (OperationCanceledException)
@@ -32,6 +43,7 @@ namespace Capa_Error_Explorer_Service
             }
             catch (Exception ex)
             {
+                _fileLogging.WriteLine($"Exception: {ex.Message}");
                 _logger.LogError(ex, "{Message}", ex.Message);
 
                 // Terminates this process and returns an exit code to the operating system.
