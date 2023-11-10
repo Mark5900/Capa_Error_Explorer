@@ -42,11 +42,64 @@ namespace Capa_Error_Explorer_Service
             }
             catch (Exception ex)
             {
-                this.FileLogging.WriteLine(ex.Message);
+                this.FileLogging.WriteErrorLine(ex.ToString());
                 return null;
             }
 
             return packages;
+        }
+
+        public List<CapaUnitJob> GetUnitJob(int PackageID, bool bDebug)
+        {
+            if (bDebug)
+            {
+                this.FileLogging.WriteLine($"GetUnitJob: {PackageID}");
+            }
+
+            List<CapaUnitJob> unitJobs = new List<CapaUnitJob>();
+            string query = $"SELECT [UNITID], [JOBID], [STATUS], [LASTRUNDATE] FROM [UNITJOB] WHERE [JOBID] = {PackageID}";
+
+            if (bDebug)
+            {
+                this.FileLogging.WriteLine($"Query: {query}");
+            }
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                CapaUnitJob unitJob = new CapaUnitJob();
+                                unitJob.UnitID = reader.GetInt32(0);
+                                unitJob.JobID = reader.GetInt32(1);
+                                unitJob.Status = reader.GetString(2);
+
+                                // Can be null if the job has never run
+                                if (reader.IsDBNull(3) == false)
+                                {
+                                    unitJob.LastRunDate = reader.GetInt32(3);
+                                }
+
+                                unitJobs.Add(unitJob);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.FileLogging.WriteErrorLine(ex.ToString());
+                return null;
+            }
+
+            return unitJobs;
         }
     }
 }

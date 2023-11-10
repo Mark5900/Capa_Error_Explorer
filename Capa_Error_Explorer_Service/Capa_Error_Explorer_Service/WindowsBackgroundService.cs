@@ -2,6 +2,8 @@ namespace Capa_Error_Explorer_Service
 {
     public class WindowsBackgroundService : BackgroundService
     {
+        bool bDebug = true;
+
         private readonly ILogger<WindowsBackgroundService> _logger;
         private readonly FileLogging _fileLogging = new FileLogging();
 
@@ -25,33 +27,44 @@ namespace Capa_Error_Explorer_Service
                     CapaInstallerDB capaInstallerDB = new CapaInstallerDB();
                     capaInstallerDB.SetConnectionString(globalSettings.CapaSQLServer, globalSettings.CapaSQLDB);
 
-                    bool bStatus = true;
 
-                    if (bStatus)
                     {
                         List<CapaPackage> capaPackages = capaInstallerDB.GetPackages();
-                        _fileLogging.WriteLine($"GetPackages: {capaPackages.Count}");
 
                         if (capaPackages == null)
                         {
-                            _fileLogging.WriteLine("Got null from GetPackages");
-                            _fileLogging.WriteLine("Wating 10 seconds and trying again");
+                            _fileLogging.WriteErrorLine("Got null from GetPackages");
+                            _fileLogging.WriteErrorLine("Wating 10 seconds and trying again");
                             await Task.Delay(10000, stoppingToken);
                             continue;
                         }
                         else
                         {
+
+                            _fileLogging.WriteLine($"GetPackages: {capaPackages.Count}");
+
                             foreach (CapaPackage capaPackage in capaPackages)
                             {
+                                if (bDebug)
+                                {
+                                    _fileLogging.WriteLine($"Package: {capaPackage.Name} {capaPackage.Version} ID: {capaPackage.ID}");
+                                }
 
+                                List<CapaUnitJob> capaUnitJobs = capaInstallerDB.GetUnitJob(capaPackage.ID, bDebug);
+
+                                if (capaUnitJobs == null)
+                                {
+                                    _fileLogging.WriteLine($"Got null from GetUnitJobs for package: {capaPackage.Name} {capaPackage.Version}");
+                                    continue;
+                                }
+                                else
+                                {
+                                    _fileLogging.WriteLine($"GetUnitJobs: {capaUnitJobs.Count}");
+
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        _fileLogging.WriteLine($"SetDatabaseSettings: {bStatus}");
-                        _fileLogging.WriteLine("Wating 10 seconds...");
-                        await Task.Delay(10000, stoppingToken);
+
                     }
                 }
             }

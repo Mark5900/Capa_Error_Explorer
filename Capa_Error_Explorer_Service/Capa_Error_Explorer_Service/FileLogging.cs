@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,13 @@ namespace Capa_Error_Explorer_Service
         {
             StreamWriter writer = new StreamWriter($"{_path}Capa_Error_Explorer_Service-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}.log", append: true);
             writer.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")} : {message}");
+            writer.Close();
+        }
+
+        public void WriteErrorLine(string message)
+        {
+            StreamWriter writer = new StreamWriter($"{_path}Capa_Error_Explorer_Service-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}.log", append: true);
+            writer.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")} : Error : {message}");
             writer.Close();
         }
     }
