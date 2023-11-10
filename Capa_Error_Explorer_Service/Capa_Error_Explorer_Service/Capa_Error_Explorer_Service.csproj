@@ -8,16 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="CapaInstaller.SDK">
-      <HintPath>..\..\..\..\..\Downloads\CapaInstaller.SDK.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

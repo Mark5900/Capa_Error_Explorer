@@ -12,7 +12,6 @@ namespace Capa_Error_Explorer_Service
         public string CapaSQLDB;
         public string ErrorExplorerSQLServer;
         public string ErrorExplorerSQLDB;
-        public string ErrorMsg;
 
         public GlobalSettings()
         {

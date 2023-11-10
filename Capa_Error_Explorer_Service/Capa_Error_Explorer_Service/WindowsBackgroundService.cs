@@ -22,13 +22,30 @@ namespace Capa_Error_Explorer_Service
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    Capa oCapa = new Capa();
+                    CapaInstallerDB capaInstallerDB = new CapaInstallerDB();
+                    capaInstallerDB.SetConnectionString(globalSettings.CapaSQLServer, globalSettings.CapaSQLDB);
+
                     bool bStatus = true;
 
-                    bStatus = oCapa.SetDatabaseSettings(globalSettings.CapaSQLServer, globalSettings.CapaSQLDB);
                     if (bStatus)
                     {
-                        List<CapaMangementPoint> oList = oCapa.GetManagementPoints();
+                        List<CapaPackage> capaPackages = capaInstallerDB.GetPackages();
+                        _fileLogging.WriteLine($"GetPackages: {capaPackages.Count}");
+
+                        if (capaPackages == null)
+                        {
+                            _fileLogging.WriteLine("Got null from GetPackages");
+                            _fileLogging.WriteLine("Wating 10 seconds and trying again");
+                            await Task.Delay(10000, stoppingToken);
+                            continue;
+                        }
+                        else
+                        {
+                            foreach (CapaPackage capaPackage in capaPackages)
+                            {
+
+                            }
+                        }
                     }
                     else
                     {
