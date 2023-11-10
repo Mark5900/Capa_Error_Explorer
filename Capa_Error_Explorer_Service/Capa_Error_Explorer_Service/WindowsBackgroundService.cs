@@ -28,11 +28,13 @@ namespace Capa_Error_Explorer_Service
                     bStatus = oCapa.SetDatabaseSettings(globalSettings.CapaSQLServer, globalSettings.CapaSQLDB);
                     if (bStatus)
                     {
-                        _fileLogging.WriteLine($"SetDatabaseSettings: {bStatus}");
+                        List<CapaMangementPoint> oList = oCapa.GetManagementPoints();
                     }
                     else
                     {
                         _fileLogging.WriteLine($"SetDatabaseSettings: {bStatus}");
+                        _fileLogging.WriteLine("Wating 10 seconds...");
+                        await Task.Delay(10000, stoppingToken);
                     }
                 }
             }
