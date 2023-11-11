@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Capa_Error_Explorer_Service
 {
-    internal class Capa
+    internal class SQL
     {
         internal FileLogging FileLogging = new FileLogging();
         internal string sConnectionString = "Persist Security Info=False;Trusted_Connection=True;database=AdventureWorks;server=(local);Encrypt=True;";

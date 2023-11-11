@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Capa_Error_Explorer_Service
 {
-    internal class CapaInstallerDB : Capa
+    internal class CapaInstallerDB : SQL
     {
         public List<CapaPackage> GetPackages()
         {
