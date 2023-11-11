@@ -14,5 +14,6 @@ namespace Capa_Error_Explorer_Service
         public Guid GUID { get; set; }
         public int CMPID { get; set; }
         public int Type { get; set; }
+        public string Recurrence { get; set; }
     }
 }

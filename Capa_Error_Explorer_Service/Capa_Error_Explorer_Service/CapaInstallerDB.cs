@@ -10,10 +10,51 @@ namespace Capa_Error_Explorer_Service
 {
     internal class CapaInstallerDB : SQL
     {
-        public List<CapaPackage> GetPackages()
+        public string GetPackageRecurrence(int PackageID, bool bDebug)
+        {
+            string sRecurrence = string.Empty;
+            string query = $"SELECT [RECURRENCE] FROM [SCHEDULE] WHERE [ID] = {PackageID}";
+
+            if (bDebug)
+            {
+                this.FileLogging.WriteLine($"Query: {query}");
+            }
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                // Can be null if the job is not scheduled
+                                if (reader.IsDBNull(0) == false)
+                                {
+                                    sRecurrence = reader.GetString(0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.FileLogging.WriteErrorLine(ex.ToString());
+                return null;
+            }
+
+            return sRecurrence;
+        }
+
+        public List<CapaPackage> GetPackages(bool bDebug)
         {
             List<CapaPackage> packages = new List<CapaPackage>();
-            string query = "SELECT [JOBID], [NAME], [VERSION], [TYPE], [GUID], [CMPID] FROM [JOB]";
+            string query = "SELECT [JOBID], [NAME], [VERSION], [TYPE], [GUID], [CMPID], [SCHEDULEID] FROM [JOB]";
 
             try
             {
@@ -34,6 +75,12 @@ namespace Capa_Error_Explorer_Service
                                 package.Type = reader.GetInt16(3);
                                 package.GUID = reader.GetGuid(4);
                                 package.CMPID = reader.GetInt32(5);
+
+                                // Can be null if the job is not scheduled
+                                if (reader.IsDBNull(6) == false)
+                                {
+                                    package.Recurrence = this.GetPackageRecurrence(reader.GetInt32(6), bDebug);
+                                }
                                 packages.Add(package);
                             }
                         }

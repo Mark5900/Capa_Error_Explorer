@@ -34,7 +34,7 @@ namespace Capa_Error_Explorer_Service
 
 
                     {
-                        capaPackages = capaInstallerDB.GetPackages();
+                        capaPackages = capaInstallerDB.GetPackages(bDebug);
 
                         if (capaPackages == null)
                         {
@@ -52,7 +52,7 @@ namespace Capa_Error_Explorer_Service
                             {
                                 if (bDebug)
                                 {
-                                    _fileLogging.WriteLine($"Package: {capaPackage.Name} {capaPackage.Version} ID: {capaPackage.ID}");
+                                    _fileLogging.WriteLine($"Package: {capaPackage.Name} {capaPackage.Version} ID: {capaPackage.ID} Recurrence: {capaPackage.Recurrence}");
                                 }
 
                                 capaUnitJobs = capaInstallerDB.GetUnitJob(capaPackage.ID, bDebug);
