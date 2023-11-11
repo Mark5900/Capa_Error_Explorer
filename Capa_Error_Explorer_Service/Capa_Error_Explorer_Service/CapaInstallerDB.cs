@@ -101,5 +101,44 @@ namespace Capa_Error_Explorer_Service
 
             return unitJobs;
         }
+
+        public CapaUnit GetUnit(int UnitID, bool bDebug)
+        {
+            CapaUnit capaUnit = new CapaUnit();
+            string query = $"SELECT [UNITID], [NAME], [UUID] FROM [UNIT] WHERE [UNITID] = {UnitID}";
+
+            if (bDebug)
+            {
+                this.FileLogging.WriteLine($"Query: {query}");
+            }
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                capaUnit.UnitID = reader.GetInt32(0);
+                                capaUnit.Name = reader.GetString(1);
+                                capaUnit.UUID = reader.GetGuid(2);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.FileLogging.WriteErrorLine(ex.ToString());
+                return null;
+            }
+
+            return capaUnit;
+        }
     }
 }

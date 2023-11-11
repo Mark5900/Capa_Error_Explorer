@@ -22,14 +22,19 @@ namespace Capa_Error_Explorer_Service
                 _fileLogging.WriteLine($"ErrorExplorerSQLServer: {globalSettings.ErrorExplorerSQLServer}");
                 _fileLogging.WriteLine($"ErrorExplorerSQLDB: {globalSettings.ErrorExplorerSQLDB}");
 
+                CapaInstallerDB capaInstallerDB = new CapaInstallerDB();
+                List<CapaPackage> capaPackages;
+                List<CapaUnitJob> capaUnitJobs;
+                CapaUnit capaUnit;
+
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    CapaInstallerDB capaInstallerDB = new CapaInstallerDB();
+
                     capaInstallerDB.SetConnectionString(globalSettings.CapaSQLServer, globalSettings.CapaSQLDB);
 
 
                     {
-                        List<CapaPackage> capaPackages = capaInstallerDB.GetPackages();
+                        capaPackages = capaInstallerDB.GetPackages();
 
                         if (capaPackages == null)
                         {
@@ -50,7 +55,7 @@ namespace Capa_Error_Explorer_Service
                                     _fileLogging.WriteLine($"Package: {capaPackage.Name} {capaPackage.Version} ID: {capaPackage.ID}");
                                 }
 
-                                List<CapaUnitJob> capaUnitJobs = capaInstallerDB.GetUnitJob(capaPackage.ID, bDebug);
+                                capaUnitJobs = capaInstallerDB.GetUnitJob(capaPackage.ID, bDebug);
 
                                 if (capaUnitJobs == null)
                                 {
@@ -61,10 +66,33 @@ namespace Capa_Error_Explorer_Service
                                 {
                                     _fileLogging.WriteLine($"GetUnitJobs: {capaUnitJobs.Count}");
 
+                                    foreach (CapaUnitJob capaUnitJob in capaUnitJobs)
+                                    {
+                                        if (bDebug)
+                                        {
+                                            _fileLogging.WriteLine($"UnitJob: {capaUnitJob.UnitID} {capaUnitJob.JobID} {capaUnitJob.Status} {capaUnitJob.LastRunDate}");
+                                        }
+
+                                        capaUnit = capaInstallerDB.GetUnit(capaUnitJob.UnitID, bDebug);
+
+                                        if (capaUnit == null)
+                                        {
+                                            _fileLogging.WriteLine($"Got null from GetUnit for UnitID: {capaUnitJob.UnitID}");
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            if (bDebug)
+                                            {
+                                                _fileLogging.WriteLine($"Unit: {capaUnit.Name} {capaUnit.UUID}");
+                                            }
+                                        }
+
+                                    }
                                 }
                             }
-                        }
 
+                        }
                     }
                 }
             }
