@@ -91,10 +91,37 @@ namespace Capa_Error_Explorer_Service
 
                                 capaErrorFromCIDB.AssignValuesFromCI(capaPackage, capaUnit, capaUnitJob);
 
+                                if (errorDB.DoesErrorExist(capaErrorFromCIDB))
+                                {
+                                    capaErrorFromErrDB = errorDB.GetError(capaErrorFromCIDB.UnitID, capaErrorFromCIDB.PackageID);
+
+                                    if (capaErrorFromCIDB.LastRunDate != capaErrorFromErrDB.LastRunDate)
+                                    {
+                                        _fileLogging.WriteLine($"LastRunDate changed from {capaErrorFromErrDB.LastRunDate} to {capaErrorFromCIDB.LastRunDate}");
+                                        _fileLogging.WriteLine($"Updating ErrorDB with new status");
+                                        errorDB.UpdateErrorStatus(capaErrorFromCIDB);
+                                    }
+                                    else
+                                    {
+                                        _fileLogging.WriteLine($"Status did not change");
+                                    }
+                                }
+                                else
+                                {
+                                    _fileLogging.WriteLine($"Error does not exist in ErrorDB");
+                                    _fileLogging.WriteLine($"Inserting new error into ErrorDB");
+                                    errorDB.InsertError(capaErrorFromCIDB);
+                                }
+
                             }
 
                         }
                     }
+
+                    /*
+                     Clean up in ErrorDB for packages that are no longer in CapaInstaller and units that are no longer in CapaInstaller
+                     But also in case of package is unliked from unit.
+                    */
                 }
             }
             catch (OperationCanceledException)
