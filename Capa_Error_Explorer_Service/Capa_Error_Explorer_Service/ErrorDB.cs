@@ -90,5 +90,61 @@ namespace Capa_Error_Explorer_Service
                 return null;
             }
         }
+
+        public void UpdateErrorStatus(CapaError capaError, CapaInstallerDB capaInstallerDB, string currentErrorTypeFromErrorDB)
+        {
+            if (string.IsNullOrEmpty(currentErrorTypeFromErrorDB) == false)
+            {
+                capaError.LastErrorType = currentErrorTypeFromErrorDB;
+            }
+
+            // Used to sort away the types we don't want to see logs on
+            switch (capaError.Status.ToLower())
+            {
+                case "not compliant":
+                case "notcompliant":
+                case "installed":
+                    break;
+                default:
+                    string packageLog = capaInstallerDB.GetPackageLog(capaError.UnitID, capaError.PackageID);
+                    capaError.GetErrorType(packageLog);
+                    break;
+            }
+
+            string query = @$"UPDATE [Capa_Errors]
+                                SET [Status] = {capaError.Status},
+                                    [LastRunDate] = {capaError.LastRunDate},
+                                    [RunCount] = [RunCount] + {capaError.RunCount},
+                                    [CurrentErrorType] = {capaError.CurrentErrorType},
+                                    [UnitUUID] = {capaError.UnitUUID},
+                                    [PackageGUID] = {capaError.PackageGUID},
+                                    [UnitName] = {capaError.UnitName},
+                                    [PackageName] = {capaError.PackageName},
+                                    [PackageVersion] = {capaError.PackageVersion},
+                                    [CMPID] = {capaError.CMPID},
+                                    [TYPE] = {capaError.Type},
+                                    [ErrorCount] = [ErrorCount] + {capaError.ErrorCount},
+                                    [LastErrorType] = {capaError.LastErrorType},
+                                    [CancelledCount] = [CancelledCount] + {capaError.CancelledCount},
+                                    [PackageRecurrence] = {capaError.PackageRecurrence}
+                                WHERE [UnitID] = {capaError.UnitID}AND [PackageID] = {capaError.PackageID}";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                FileLogging.WriteErrorLine($"ErrorDB.UpdateErrorStatus: {ex.Message}");
+            }
+        }
     }
 }

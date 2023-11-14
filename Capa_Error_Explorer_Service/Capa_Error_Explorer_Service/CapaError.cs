@@ -20,7 +20,7 @@ namespace Capa_Error_Explorer_Service
         public string PackageName { get; set; }
         public string PackageVersion { get; set; }
         public int CMPID { get; set; }
-        public Int Type { get; set; }
+        public int Type { get; set; }
         public int ErrorCount { get; set; }
         public string LastErrorType { get; set; }
         // Resets to 0 when status changes to Installed, but not if job runs allways
@@ -76,5 +76,11 @@ namespace Capa_Error_Explorer_Service
                 this.ErrorCount = 1;
             }
         }
+
+        public string GetErrorType(string PackageLog)
+        {
+            return "Unknown";
+        }
+
     }
 }

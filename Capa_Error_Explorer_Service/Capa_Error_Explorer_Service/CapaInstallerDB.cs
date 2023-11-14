@@ -187,5 +187,31 @@ namespace Capa_Error_Explorer_Service
 
             return capaUnit;
         }
+
+        public string GetPackageLog(int UnitID, int PackageID)
+        {
+            string sLog;
+            string query = $"SELECT [LOG] FROM [UNITJOBLOG] WHERE [UNITID] = {UnitID} AND [JOBID] = {PackageID}";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        sLog = (string)command.ExecuteScalar();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.FileLogging.WriteErrorLine(ex.ToString());
+                return null;
+            }
+
+            return sLog;
+        }
     }
 }
