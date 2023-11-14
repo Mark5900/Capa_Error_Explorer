@@ -99,7 +99,7 @@ namespace Capa_Error_Explorer_Service
                                     {
                                         _fileLogging.WriteLine($"LastRunDate changed from {capaErrorFromErrDB.LastRunDate} to {capaErrorFromCIDB.LastRunDate}");
                                         _fileLogging.WriteLine($"Updating ErrorDB with new status");
-                                        errorDB.UpdateErrorStatus(capaErrorFromCIDB);
+                                        errorDB.UpdateErrorStatus(capaErrorFromCIDB, capaInstallerDB, capaErrorFromErrDB.LastErrorType);
                                     }
                                     else
                                     {
@@ -119,9 +119,12 @@ namespace Capa_Error_Explorer_Service
                     }
 
                     /*
-                     Clean up in ErrorDB for packages that are no longer in CapaInstaller and units that are no longer in CapaInstaller
+                     TODO: Clean up in ErrorDB for packages that are no longer in CapaInstaller and units that are no longer in CapaInstaller
                      But also in case of package is unliked from unit.
                     */
+
+                    // TODO: Handle reinstallation of a unit remove it from the DB
+                    // TODO Skip when package status is Installing, Uninstalling, Advertised and PostInstalling
                 }
             }
             catch (OperationCanceledException)
