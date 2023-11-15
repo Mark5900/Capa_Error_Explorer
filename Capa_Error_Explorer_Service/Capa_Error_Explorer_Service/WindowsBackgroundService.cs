@@ -110,7 +110,7 @@ namespace Capa_Error_Explorer_Service
                                 {
                                     _fileLogging.WriteLine($"Error does not exist in ErrorDB");
                                     _fileLogging.WriteLine($"Inserting new error into ErrorDB");
-                                    errorDB.InsertError(capaErrorFromCIDB);
+                                    errorDB.InsertError(capaErrorFromCIDB, capaInstallerDB);
                                 }
 
                             }

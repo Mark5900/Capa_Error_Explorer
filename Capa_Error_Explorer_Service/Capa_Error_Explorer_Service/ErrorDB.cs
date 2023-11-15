@@ -146,5 +146,41 @@ namespace Capa_Error_Explorer_Service
                 FileLogging.WriteErrorLine($"ErrorDB.UpdateErrorStatus: {ex.Message}");
             }
         }
+
+        public void InsertError(CapaError capaError, CapaInstallerDB capaInstallerDB)
+        {
+            // Used to sort away the types we don't want to see logs on
+            switch (capaError.Status.ToLower())
+            {
+                case "not compliant":
+                case "notcompliant":
+                case "installed":
+                    break;
+                default:
+                    string packageLog = capaInstallerDB.GetPackageLog(capaError.UnitID, capaError.PackageID);
+                    capaError.GetErrorType(packageLog);
+                    break;
+            }
+
+            string query = "INSERT INTO [Capa_Errors] ([UnitID],[PackageID],[Status],[LastRunDate],[RunCount],[CurrentErrorType],[UnitUUID],[PackageGUID],[UnitName],[PackageName],[PackageVersion],[CMPID],[TYPE],[ErrorCount],[LastErrorType],[CancelledCount],[PackageRecurrence])" +
+                $"VALUES ({capaError.UnitID},{capaError.PackageID},{capaError.Status},{capaError.LastRunDate},{capaError.RunCount},{capaError.CurrentErrorType},{capaError.UnitUUID},{capaError.PackageGUID},{capaError.UnitName},{capaError.PackageName},{capaError.PackageVersion},{capaError.CMPID},{capaError.Type},{capaError.ErrorCount},{capaError.LastErrorType},{capaError.CancelledCount},{capaError.PackageRecurrence})";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                FileLogging.WriteErrorLine($"ErrorDB.InsertError: {ex.Message}");
+            }
+        }
     }
 }
