@@ -43,10 +43,15 @@ namespace Capa_Error_Explorer_Service
             return bReturn;
         }
 
-        public CapaError GetError(int UnitID, int PackageID)
+        public CapaError GetError(int UnitID, int PackageID, bool bDebug)
         {
             CapaError capaError = new CapaError();
             string query = $"SELECT [UnitID],[PackageID],[Status],[LastRunDate],[RunCount],[CurrentErrorType],[UnitUUID],[PackageGUID],[UnitName],[PackageName],[PackageVersion],[CMPID],[TYPE],[ErrorCount],[LastErrorType],[CancelledCount],[PackageRecurrence]FROM [Capa_Errors] WHERE UnitID = {UnitID} AND PackageID = {PackageID}";
+
+            if (bDebug)
+            {
+                FileLogging.WriteLine($"Query: {query}");
+            }
 
             try
             {
@@ -65,21 +70,43 @@ namespace Capa_Error_Explorer_Service
                                 capaError.Status = reader.GetString(2);
                                 capaError.LastRunDate = reader.GetInt32(3);
                                 capaError.RunCount = reader.GetInt32(4);
-                                capaError.CurrentErrorType = reader.GetString(5);
                                 capaError.UnitUUID = reader.GetGuid(6);
                                 capaError.PackageGUID = reader.GetGuid(7);
                                 capaError.UnitName = reader.GetString(8);
                                 capaError.PackageName = reader.GetString(9);
                                 capaError.PackageVersion = reader.GetString(10);
                                 capaError.CMPID = reader.GetInt32(11);
-                                capaError.Type = reader.GetInt32(12);
+                                capaError.Type = reader.GetInt16(12);
                                 capaError.ErrorCount = reader.GetInt32(13);
-                                capaError.LastErrorType = reader.GetString(14);
                                 capaError.CancelledCount = reader.GetInt32(15);
                                 capaError.PackageRecurrence = reader.GetString(16);
+
+                                try
+                                {
+                                    capaError.CurrentErrorType = reader.GetString(5);
+                                }
+                                catch (Exception ex)
+                                {
+                                    capaError.CurrentErrorType = null;
+                                }
+
+                                try
+                                {
+                                    capaError.LastErrorType = reader.GetString(14);
+                                }
+                                catch (Exception ex)
+                                {
+                                    capaError.LastErrorType = null;
+                                }
+
                             }
                         }
                     }
+                }
+
+                if (bDebug)
+                {
+                    FileLogging.WriteLine($"GetError : UnitID: {capaError.UnitID} PackageID: {capaError.PackageID} Status: {capaError.Status} LastRunDate: {capaError.LastRunDate} RunCount: {capaError.RunCount} CurrentErrorType: {capaError.CurrentErrorType} UnitUUID: {capaError.UnitUUID} PackageGUID: {capaError.PackageGUID} UnitName: {capaError.UnitName} PackageName: {capaError.PackageName} PackageVersion: {capaError.PackageVersion} CMPID: {capaError.CMPID} Type: {capaError.Type} ErrorCount: {capaError.ErrorCount} LastErrorType: {capaError.LastErrorType} CancelledCount: {capaError.CancelledCount} PackageRecurrence: {capaError.PackageRecurrence}");
                 }
 
                 return capaError;

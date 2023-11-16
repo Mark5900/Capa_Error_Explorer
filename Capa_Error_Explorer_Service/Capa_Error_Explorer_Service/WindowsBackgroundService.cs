@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace Capa_Error_Explorer_Service
 {
     public class WindowsBackgroundService : BackgroundService
@@ -22,6 +24,7 @@ namespace Capa_Error_Explorer_Service
                 _fileLogging.WriteLine($"CapaSQLDB: {globalSettings.CapaSQLDB}");
                 _fileLogging.WriteLine($"ErrorExplorerSQLServer: {globalSettings.ErrorExplorerSQLServer}");
                 _fileLogging.WriteLine($"ErrorExplorerSQLDB: {globalSettings.ErrorExplorerSQLDB}");
+                bDebug = globalSettings.bDebug;
 
                 CapaInstallerDB capaInstallerDB = new CapaInstallerDB();
                 ErrorDB errorDB = new ErrorDB();
@@ -94,13 +97,35 @@ namespace Capa_Error_Explorer_Service
 
                                 if (errorDB.DoesErrorExist(capaErrorFromCIDB))
                                 {
-                                    capaErrorFromErrDB = errorDB.GetError(capaErrorFromCIDB.UnitID, capaErrorFromCIDB.PackageID);
+                                    capaErrorFromErrDB = errorDB.GetError(capaErrorFromCIDB.UnitID, capaErrorFromCIDB.PackageID, bDebug);
 
-                                    if (capaErrorFromCIDB.LastRunDate != capaErrorFromErrDB.LastRunDate)
+                                    if (bDebug)
+                                    {
+                                        _fileLogging.WriteLine($"LastRunDate: {capaErrorFromCIDB.LastRunDate}");
+
+                                    }
+
+                                    if (string.IsNullOrEmpty(capaErrorFromCIDB.LastRunDate.ToString()) || capaErrorFromCIDB.LastRunDate == 0)
+                                    {
+                                        if (bDebug)
+                                        {
+                                            _fileLogging.WriteLine($"Item is in ErrorDB but the job has never run (UNITID: {capaErrorFromCIDB.UnitID} JOBID: {capaErrorFromCIDB.PackageID})");
+                                        }
+
+                                        continue;
+                                    }
+                                    else if (capaErrorFromCIDB.LastRunDate != capaErrorFromErrDB.LastRunDate)
                                     {
                                         _fileLogging.WriteLine($"LastRunDate changed from {capaErrorFromErrDB.LastRunDate} to {capaErrorFromCIDB.LastRunDate}");
                                         _fileLogging.WriteLine($"Updating ErrorDB with new status (UNITID: {capaErrorFromCIDB.UnitID} JOBID: {capaErrorFromCIDB.PackageID})");
                                         errorDB.UpdateErrorStatus(capaErrorFromCIDB, capaInstallerDB, capaErrorFromErrDB.LastErrorType);
+                                    }
+                                    else
+                                    {
+                                        if (bDebug)
+                                        {
+                                            _fileLogging.WriteLine($"LastRunDate is the same {capaErrorFromErrDB.LastRunDate}");
+                                        }
                                     }
                                 }
                                 else

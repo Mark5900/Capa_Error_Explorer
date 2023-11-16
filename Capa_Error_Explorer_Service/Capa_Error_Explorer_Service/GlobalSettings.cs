@@ -12,6 +12,7 @@ namespace Capa_Error_Explorer_Service
         public string CapaSQLDB;
         public string ErrorExplorerSQLServer;
         public string ErrorExplorerSQLDB;
+        public bool bDebug;
 
         public GlobalSettings()
         {
@@ -23,6 +24,7 @@ namespace Capa_Error_Explorer_Service
             CapaSQLDB = builder.Build().GetSection("SQLSettings").GetSection("CapaSQLDB").Value;
             ErrorExplorerSQLServer = builder.Build().GetSection("SQLSettings").GetSection("ErrorExplorerSQLServer").Value;
             ErrorExplorerSQLDB = builder.Build().GetSection("SQLSettings").GetSection("ErrorExplorerSQLDB").Value;
+            bDebug = Convert.ToBoolean(builder.Build().GetSection("Logging").GetSection("Debug").Value);
         }
     }
 }
