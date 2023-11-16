@@ -46,7 +46,7 @@ namespace Capa_Error_Explorer_Service
         public CapaError GetError(int UnitID, int PackageID)
         {
             CapaError capaError = new CapaError();
-            string query = $"SELECT TOP (1000) [UnitID],[PackageID],[Status],[LastRunDate],[RunCount],[CurrentErrorType],[UnitUUID],[PackageGUID],[UnitName],[PackageName],[PackageVersion],[CMPID],[TYPE],[ErrorCount],[LastErrorType],[CancelledCount],[PackageRecurrence]FROM [Capa_Errors]\r\n WHERE UnitID = {UnitID} AND PackageID = {PackageID}";
+            string query = $"SELECT [UnitID],[PackageID],[Status],[LastRunDate],[RunCount],[CurrentErrorType],[UnitUUID],[PackageGUID],[UnitName],[PackageName],[PackageVersion],[CMPID],[TYPE],[ErrorCount],[LastErrorType],[CancelledCount],[PackageRecurrence]FROM [Capa_Errors] WHERE UnitID = {UnitID} AND PackageID = {PackageID}";
 
             try
             {
@@ -93,6 +93,9 @@ namespace Capa_Error_Explorer_Service
 
         public void UpdateErrorStatus(CapaError capaError, CapaInstallerDB capaInstallerDB, string currentErrorTypeFromErrorDB)
         {
+            string sCurrentErrorType = "NULL";
+            string sLastErrorType = "NULL";
+
             if (string.IsNullOrEmpty(currentErrorTypeFromErrorDB) == false)
             {
                 capaError.LastErrorType = currentErrorTypeFromErrorDB;
@@ -111,22 +114,31 @@ namespace Capa_Error_Explorer_Service
                     break;
             }
 
+            if (capaError.CurrentErrorType != null)
+            {
+                sCurrentErrorType = $"'{capaError.CurrentErrorType}'";
+            }
+            if (capaError.LastErrorType != null)
+            {
+                sLastErrorType = $"'{capaError.LastErrorType}'";
+            }
+
             string query = @$"UPDATE [Capa_Errors]
-                                SET [Status] = {capaError.Status},
-                                    [LastRunDate] = {capaError.LastRunDate},
+                                SET [Status] = '{capaError.Status}',
+                                    [LastRunDate] = '{capaError.LastRunDate}',
                                     [RunCount] = [RunCount] + {capaError.RunCount},
-                                    [CurrentErrorType] = {capaError.CurrentErrorType},
-                                    [UnitUUID] = {capaError.UnitUUID},
-                                    [PackageGUID] = {capaError.PackageGUID},
-                                    [UnitName] = {capaError.UnitName},
-                                    [PackageName] = {capaError.PackageName},
-                                    [PackageVersion] = {capaError.PackageVersion},
-                                    [CMPID] = {capaError.CMPID},
-                                    [TYPE] = {capaError.Type},
+                                    [CurrentErrorType] = {sCurrentErrorType},
+                                    [UnitUUID] = '{capaError.UnitUUID}',
+                                    [PackageGUID] = '{capaError.PackageGUID}',
+                                    [UnitName] = '{capaError.UnitName}',
+                                    [PackageName] = '{capaError.PackageName}',
+                                    [PackageVersion] = '{capaError.PackageVersion}',
+                                    [CMPID] = '{capaError.CMPID}',
+                                    [TYPE] = '{capaError.Type}',
                                     [ErrorCount] = [ErrorCount] + {capaError.ErrorCount},
-                                    [LastErrorType] = {capaError.LastErrorType},
+                                    [LastErrorType] = {sLastErrorType},
                                     [CancelledCount] = [CancelledCount] + {capaError.CancelledCount},
-                                    [PackageRecurrence] = {capaError.PackageRecurrence}
+                                    [PackageRecurrence] = '{capaError.PackageRecurrence}'
                                 WHERE [UnitID] = {capaError.UnitID}AND [PackageID] = {capaError.PackageID}";
 
             try
@@ -149,6 +161,9 @@ namespace Capa_Error_Explorer_Service
 
         public void InsertError(CapaError capaError, CapaInstallerDB capaInstallerDB)
         {
+            string sCurrentErrorType = "NULL";
+            string sLastErrorType = "NULL";
+
             // Used to sort away the types we don't want to see logs on
             switch (capaError.Status.ToLower())
             {
@@ -162,8 +177,17 @@ namespace Capa_Error_Explorer_Service
                     break;
             }
 
+            if (capaError.CurrentErrorType != null)
+            {
+                sCurrentErrorType = $"'{capaError.CurrentErrorType}'";
+            }
+            if (capaError.LastErrorType != null)
+            {
+                sLastErrorType = $"'{capaError.LastErrorType}'";
+            }
+
             string query = "INSERT INTO [Capa_Errors] ([UnitID],[PackageID],[Status],[LastRunDate],[RunCount],[CurrentErrorType],[UnitUUID],[PackageGUID],[UnitName],[PackageName],[PackageVersion],[CMPID],[TYPE],[ErrorCount],[LastErrorType],[CancelledCount],[PackageRecurrence])" +
-                $"VALUES ({capaError.UnitID},{capaError.PackageID},{capaError.Status},{capaError.LastRunDate},{capaError.RunCount},{capaError.CurrentErrorType},{capaError.UnitUUID},{capaError.PackageGUID},{capaError.UnitName},{capaError.PackageName},{capaError.PackageVersion},{capaError.CMPID},{capaError.Type},{capaError.ErrorCount},{capaError.LastErrorType},{capaError.CancelledCount},{capaError.PackageRecurrence})";
+                $"VALUES ('{capaError.UnitID}','{capaError.PackageID}','{capaError.Status}','{capaError.LastRunDate}','{capaError.RunCount}',{sCurrentErrorType},'{capaError.UnitUUID}','{capaError.PackageGUID}','{capaError.UnitName}','{capaError.PackageName}','{capaError.PackageVersion}','{capaError.CMPID}','{capaError.Type}','{capaError.ErrorCount}',{sLastErrorType},'{capaError.CancelledCount}','{capaError.PackageRecurrence}')";
 
             try
             {

@@ -23,14 +23,14 @@ namespace Capa_Error_Explorer_Service
         public void WriteLine(string message)
         {
             StreamWriter writer = new StreamWriter($"{_path}Capa_Error_Explorer_Service-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}.log", append: true);
-            writer.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")} : {message}");
+            writer.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")} : TRUE : {message}");
             writer.Close();
         }
 
         public void WriteErrorLine(string message)
         {
             StreamWriter writer = new StreamWriter($"{_path}Capa_Error_Explorer_Service-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}.log", append: true);
-            writer.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")} : Error : {message}");
+            writer.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")} : FALSE : {message}");
             writer.Close();
         }
     }

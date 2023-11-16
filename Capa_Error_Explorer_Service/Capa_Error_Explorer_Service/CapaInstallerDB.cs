@@ -191,7 +191,7 @@ namespace Capa_Error_Explorer_Service
         public string GetPackageLog(int UnitID, int PackageID)
         {
             string sLog;
-            string query = $"SELECT [LOG] FROM [UNITJOBLOG] WHERE [UNITID] = {UnitID} AND [JOBID] = {PackageID}";
+            string query = $"SELECT [LOG] FROM [UNITJOB] WHERE [UNITID] = {UnitID} AND [JOBID] = {PackageID}";
 
             try
             {
@@ -201,7 +201,15 @@ namespace Capa_Error_Explorer_Service
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        sLog = (string)command.ExecuteScalar();
+                        object oLog = command.ExecuteScalar();
+                        if (oLog.GetType() == typeof(DBNull))
+                        {
+                            sLog = string.Empty;
+                        }
+                        else
+                        {
+                            sLog = (string)oLog;
+                        }
                     }
                 }
             }

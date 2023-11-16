@@ -2,7 +2,7 @@ namespace Capa_Error_Explorer_Service
 {
     public class WindowsBackgroundService : BackgroundService
     {
-        bool bDebug = true;
+        bool bDebug = false;
 
         private readonly ILogger<WindowsBackgroundService> _logger;
         private readonly FileLogging _fileLogging = new FileLogging();
@@ -16,6 +16,7 @@ namespace Capa_Error_Explorer_Service
         {
             try
             {
+
                 GlobalSettings globalSettings = new GlobalSettings();
                 _fileLogging.WriteLine($"CapaSQLServer: {globalSettings.CapaSQLServer}");
                 _fileLogging.WriteLine($"CapaSQLDB: {globalSettings.CapaSQLDB}");
@@ -98,18 +99,13 @@ namespace Capa_Error_Explorer_Service
                                     if (capaErrorFromCIDB.LastRunDate != capaErrorFromErrDB.LastRunDate)
                                     {
                                         _fileLogging.WriteLine($"LastRunDate changed from {capaErrorFromErrDB.LastRunDate} to {capaErrorFromCIDB.LastRunDate}");
-                                        _fileLogging.WriteLine($"Updating ErrorDB with new status");
+                                        _fileLogging.WriteLine($"Updating ErrorDB with new status (UNITID: {capaErrorFromCIDB.UnitID} JOBID: {capaErrorFromCIDB.PackageID})");
                                         errorDB.UpdateErrorStatus(capaErrorFromCIDB, capaInstallerDB, capaErrorFromErrDB.LastErrorType);
-                                    }
-                                    else
-                                    {
-                                        _fileLogging.WriteLine($"Status did not change");
                                     }
                                 }
                                 else
                                 {
-                                    _fileLogging.WriteLine($"Error does not exist in ErrorDB");
-                                    _fileLogging.WriteLine($"Inserting new error into ErrorDB");
+                                    _fileLogging.WriteLine($"Inserting new item into ErrorDB (UNITID: {capaErrorFromCIDB.UnitID} JOBID: {capaErrorFromCIDB.PackageID})");
                                     errorDB.InsertError(capaErrorFromCIDB, capaInstallerDB);
                                 }
 
@@ -125,6 +121,9 @@ namespace Capa_Error_Explorer_Service
 
                     // TODO: Handle reinstallation of a unit remove it from the DB
                     // TODO Skip when package status is Installing, Uninstalling, Advertised and PostInstalling
+
+                    _fileLogging.WriteLine("DONE");
+                    _fileLogging.WriteLine("");
                 }
             }
             catch (OperationCanceledException)
