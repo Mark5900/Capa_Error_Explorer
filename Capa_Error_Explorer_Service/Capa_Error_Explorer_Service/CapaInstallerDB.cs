@@ -40,6 +40,8 @@ namespace Capa_Error_Explorer_Service
                             }
                         }
                     }
+
+                    connection.Close();
                 }
             }
             catch (Exception ex)
@@ -85,6 +87,8 @@ namespace Capa_Error_Explorer_Service
                             }
                         }
                     }
+
+                    connection.Close();
                 }
             }
             catch (Exception ex)
@@ -138,6 +142,8 @@ namespace Capa_Error_Explorer_Service
                             }
                         }
                     }
+
+                    connection.Close();
                 }
             }
             catch (Exception ex)
@@ -177,6 +183,8 @@ namespace Capa_Error_Explorer_Service
                             }
                         }
                     }
+
+                    connection.Close();
                 }
             }
             catch (Exception ex)
@@ -211,6 +219,8 @@ namespace Capa_Error_Explorer_Service
                             sLog = (string)oLog;
                         }
                     }
+
+                    connection.Close();
                 }
             }
             catch (Exception ex)

@@ -33,6 +33,8 @@ namespace Capa_Error_Explorer_Service
                             }
                         }
                     }
+
+                    connection.Close();
                 }
             }
             catch (Exception ex)
@@ -102,6 +104,8 @@ namespace Capa_Error_Explorer_Service
                             }
                         }
                     }
+
+                    connection.Close();
                 }
 
                 if (bDebug)
@@ -178,6 +182,8 @@ namespace Capa_Error_Explorer_Service
                     {
                         command.ExecuteNonQuery();
                     }
+
+                    connection.Close();
                 }
             }
             catch (Exception ex)
@@ -226,6 +232,8 @@ namespace Capa_Error_Explorer_Service
                     {
                         command.ExecuteNonQuery();
                     }
+
+                    connection.Close();
                 }
             }
             catch (Exception ex)
