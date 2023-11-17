@@ -107,6 +107,7 @@ namespace Capa_Error_Explorer_Service
 
                                     if (string.IsNullOrEmpty(capaErrorFromCIDB.LastRunDate.ToString()) || capaErrorFromCIDB.LastRunDate == 0)
                                     {
+                                        // TODO Remove. If LastRunDate noot the same the update the ErrorDB
                                         if (bDebug)
                                         {
                                             _fileLogging.WriteLine($"Item is in ErrorDB but the job has never run (UNITID: {capaErrorFromCIDB.UnitID} JOBID: {capaErrorFromCIDB.PackageID})");
