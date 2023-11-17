@@ -81,22 +81,22 @@ namespace Capa_Error_Explorer_Service
                                 capaError.CancelledCount = reader.GetInt32(15);
                                 capaError.PackageRecurrence = reader.GetString(16);
 
-                                try
-                                {
-                                    capaError.CurrentErrorType = reader.GetString(5);
-                                }
-                                catch (Exception ex)
+                                if (reader.IsDBNull(5))
                                 {
                                     capaError.CurrentErrorType = null;
                                 }
-
-                                try
+                                else
                                 {
-                                    capaError.LastErrorType = reader.GetString(14);
+                                    capaError.CurrentErrorType = reader.GetString(5);
                                 }
-                                catch (Exception ex)
+
+                                if (reader.IsDBNull(14))
                                 {
                                     capaError.LastErrorType = null;
+                                }
+                                else
+                                {
+                                    capaError.LastErrorType = reader.GetString(14);
                                 }
 
                             }
