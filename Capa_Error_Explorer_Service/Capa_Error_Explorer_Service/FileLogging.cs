@@ -11,6 +11,7 @@ namespace Capa_Error_Explorer_Service
     internal class FileLogging
     {
         private static string _path = @"C:\Program Files\Capa_Error_Explorer\Logs\";
+        // TODO: Keep log files for 30 days
         public FileLogging()
         {
             if (!System.IO.Directory.Exists(_path))
