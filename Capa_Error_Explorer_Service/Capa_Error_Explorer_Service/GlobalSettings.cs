@@ -8,9 +8,8 @@ namespace Capa_Error_Explorer_Service
 {
     public class GlobalSettings
     {
-        public string CapaSQLServer;
+        public string SQLServer;
         public string CapaSQLDB;
-        public string ErrorExplorerSQLServer;
         public string ErrorExplorerSQLDB;
         public bool bDebug;
 
@@ -20,9 +19,8 @@ namespace Capa_Error_Explorer_Service
                                .SetBasePath(Directory.GetCurrentDirectory())
                                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-            CapaSQLServer = builder.Build().GetSection("SQLSettings").GetSection("CapaSQLServer").Value;
+            SQLServer = builder.Build().GetSection("SQLSettings").GetSection("SQLServer").Value;
             CapaSQLDB = builder.Build().GetSection("SQLSettings").GetSection("CapaSQLDB").Value;
-            ErrorExplorerSQLServer = builder.Build().GetSection("SQLSettings").GetSection("ErrorExplorerSQLServer").Value;
             ErrorExplorerSQLDB = builder.Build().GetSection("SQLSettings").GetSection("ErrorExplorerSQLDB").Value;
             bDebug = Convert.ToBoolean(builder.Build().GetSection("Logging").GetSection("Debug").Value);
         }

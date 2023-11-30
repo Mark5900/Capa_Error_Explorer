@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,8 @@ namespace Capa_Error_Explorer_Service
         // Resets to 0 when status changes to Installed, but not if job runs allways
         public int CancelledCount { get; set; }
         public string PackageRecurrence { get; set; }
+
+        public string Log { get; set; }
 
         public void ResetObj()
         {
@@ -77,9 +80,25 @@ namespace Capa_Error_Explorer_Service
             }
         }
 
-        public string GetErrorType(string PackageLog)
+        public void SetErrorType()
         {
-            return "Unknown";
+            if (String.IsNullOrEmpty(this.CurrentErrorType) == false)
+            {
+                this.LastErrorType = this.CurrentErrorType;
+            }
+
+            switch (this.Status.ToLower())
+            {
+                case "installing":
+                case "waiting":
+                case "postinstalling":
+                case "uninstalling":
+                case "installed":
+                    break;
+                default:
+                    this.CurrentErrorType = "Unknown";
+                    break;
+            }
         }
 
     }

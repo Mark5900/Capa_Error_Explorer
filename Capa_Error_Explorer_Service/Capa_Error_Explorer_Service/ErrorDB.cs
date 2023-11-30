@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -132,18 +133,7 @@ namespace Capa_Error_Explorer_Service
                 capaError.LastErrorType = currentErrorTypeFromErrorDB;
             }
 
-            // Used to sort away the types we don't want to see logs on
-            switch (capaError.Status.ToLower())
-            {
-                case "not compliant":
-                case "notcompliant":
-                case "installed":
-                    break;
-                default:
-                    string packageLog = capaInstallerDB.GetPackageLog(capaError.UnitID, capaError.PackageID);
-                    capaError.GetErrorType(packageLog);
-                    break;
-            }
+            capaError.SetErrorType();
 
             if (capaError.CurrentErrorType != null)
             {
@@ -192,23 +182,12 @@ namespace Capa_Error_Explorer_Service
             }
         }
 
-        public void InsertError(CapaError capaError, CapaInstallerDB capaInstallerDB)
+        public void InsertError(CapaError capaError)
         {
             string sCurrentErrorType = "NULL";
             string sLastErrorType = "NULL";
 
-            // Used to sort away the types we don't want to see logs on
-            switch (capaError.Status.ToLower())
-            {
-                case "not compliant":
-                case "notcompliant":
-                case "installed":
-                    break;
-                default:
-                    string packageLog = capaInstallerDB.GetPackageLog(capaError.UnitID, capaError.PackageID);
-                    capaError.GetErrorType(packageLog);
-                    break;
-            }
+            capaError.SetErrorType();
 
             if (capaError.CurrentErrorType != null)
             {
@@ -239,6 +218,56 @@ namespace Capa_Error_Explorer_Service
             catch (Exception ex)
             {
                 FileLogging.WriteErrorLine($"ErrorDB.InsertError: {ex.Message}");
+            }
+        }
+
+        public List<CapaError> Get_NotIn_Capa_Error()
+        {
+            string query = "SELECT [UNITID],[PackageID],[STATUS],[LASTRUNDATE],[LOG],[UnitUUID],[UnitName],[TYPE],[PackageGUID],[PackageName],[PackageVersion],[RECURRENCE] FROM [V_CE_NotIn_Capa_Errors]";
+            List<CapaError> capaErrors = new List<CapaError>();
+            CapaError capaError = new CapaError();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                capaError.ResetObj();
+
+                                capaError.UnitID = reader.GetInt32(0);
+                                capaError.PackageID = reader.GetInt32(1);
+                                capaError.Status = reader.GetString(2);
+                                capaError.LastRunDate = reader.GetInt32(3);
+                                capaError.Log = reader.GetString(4);
+                                capaError.UnitUUID = reader.GetGuid(5);
+                                capaError.UnitName = reader.GetString(6);
+                                capaError.Type = reader.GetInt32(7);
+                                capaError.PackageGUID = reader.GetGuid(8);
+                                capaError.PackageName = reader.GetString(9);
+                                capaError.PackageVersion = reader.GetString(10);
+                                capaError.PackageRecurrence = reader.GetString(11);
+
+                                capaErrors.Add(capaError);
+                            }
+                        }
+                    }
+
+                    connection.Close();
+                }
+
+                return capaErrors;
+            }
+            catch (Exception ex)
+            {
+                FileLogging.WriteErrorLine($"ErrorDB.Get_NotIn_Capa_Error: {ex.Message}");
+                return null;
             }
         }
     }

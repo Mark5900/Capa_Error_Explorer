@@ -20,125 +20,42 @@ namespace Capa_Error_Explorer_Service
             {
 
                 GlobalSettings globalSettings = new GlobalSettings();
-                _fileLogging.WriteLine($"CapaSQLServer: {globalSettings.CapaSQLServer}");
+                _fileLogging.WriteLine($"CapaSQLServer: {globalSettings.SQLServer}");
                 _fileLogging.WriteLine($"CapaSQLDB: {globalSettings.CapaSQLDB}");
-                _fileLogging.WriteLine($"ErrorExplorerSQLServer: {globalSettings.ErrorExplorerSQLServer}");
                 _fileLogging.WriteLine($"ErrorExplorerSQLDB: {globalSettings.ErrorExplorerSQLDB}");
                 bDebug = globalSettings.bDebug;
 
                 CapaInstallerDB capaInstallerDB = new CapaInstallerDB();
                 ErrorDB errorDB = new ErrorDB();
-                List<CapaPackage> capaPackages;
-                List<CapaUnitJob> capaUnitJobs;
-                CapaUnit capaUnit;
-                CapaError capaErrorFromCIDB;
-                CapaError capaErrorFromErrDB;
+                List<CapaError> capaErrors;
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
 
-                    capaInstallerDB.SetConnectionString(globalSettings.CapaSQLServer, globalSettings.CapaSQLDB);
-                    errorDB.SetConnectionString(globalSettings.ErrorExplorerSQLServer, globalSettings.ErrorExplorerSQLDB);
+                    capaInstallerDB.SetConnectionString(globalSettings.SQLServer, globalSettings.CapaSQLDB);
+                    errorDB.SetConnectionString(globalSettings.SQLServer, globalSettings.ErrorExplorerSQLDB);
+
+                    #region Insert things that are not in Capa_Errors tabel
+                    capaErrors = errorDB.Get_NotIn_Capa_Error();
+                    if (capaErrors != null)
                     {
-                        capaPackages = new List<CapaPackage>();
-                        capaPackages = capaInstallerDB.GetPackages(bDebug);
-
-                        if (capaPackages == null)
+                        _fileLogging.WriteLine($"Inserting {capaErrors.Count} new rows into Capa_Error");
+                        foreach (CapaError capaError in capaErrors)
                         {
-                            _fileLogging.WriteErrorLine("Got null from GetPackages");
-                            _fileLogging.WriteErrorLine("Wating 10 seconds and trying again");
-                            await Task.Delay(10000, stoppingToken);
-                            continue;
-                        }
-
-                        _fileLogging.WriteLine($"GetPackages: {capaPackages.Count}");
-
-                        foreach (CapaPackage capaPackage in capaPackages)
-                        {
-                            if (bDebug)
+                            try
                             {
-                                _fileLogging.WriteLine($"Package: {capaPackage.Name} {capaPackage.Version} ID: {capaPackage.ID} Recurrence: {capaPackage.Recurrence}");
+                                errorDB.InsertError(capaError);
+                                _fileLogging.WriteLine($"Inserted PackageID: {capaError.PackageID} UnitID: {capaError.UnitID}");
                             }
-
-                            capaUnitJobs = new List<CapaUnitJob>();
-                            capaUnitJobs = capaInstallerDB.GetUnitJob(capaPackage.ID, bDebug);
-
-                            if (capaUnitJobs == null)
+                            catch (Exception ex)
                             {
-                                _fileLogging.WriteLine($"Got null from GetUnitJobs for package: {capaPackage.Name} {capaPackage.Version}");
-                                continue;
+                                _fileLogging.WriteErrorLine($"Exception: {ex.Message}");
+                                _logger.LogError(ex, "{Message}", ex.Message);
                             }
-                            _fileLogging.WriteLine($"GetUnitJobs: {capaUnitJobs.Count}");
-
-                            foreach (CapaUnitJob capaUnitJob in capaUnitJobs)
-                            {
-                                if (bDebug)
-                                {
-                                    _fileLogging.WriteLine($"UnitJob: {capaUnitJob.UnitID} {capaUnitJob.JobID} {capaUnitJob.Status} {capaUnitJob.LastRunDate}");
-                                }
-
-                                capaUnit = new CapaUnit();
-                                capaUnit = capaInstallerDB.GetUnit(capaUnitJob.UnitID, bDebug);
-
-                                if (capaUnit == null)
-                                {
-                                    _fileLogging.WriteLine($"Got null from GetUnit for UnitID: {capaUnitJob.UnitID}");
-                                    continue;
-                                }
-                                if (bDebug)
-                                {
-                                    _fileLogging.WriteLine($"Unit: {capaUnit.Name} {capaUnit.UUID}");
-                                }
-
-                                capaErrorFromCIDB = new CapaError();
-                                capaErrorFromErrDB = new CapaError();
-
-                                capaErrorFromCIDB.AssignValuesFromCI(capaPackage, capaUnit, capaUnitJob);
-
-                                if (errorDB.DoesErrorExist(capaErrorFromCIDB))
-                                {
-                                    capaErrorFromErrDB = errorDB.GetError(capaErrorFromCIDB.UnitID, capaErrorFromCIDB.PackageID, bDebug);
-
-                                    if (bDebug)
-                                    {
-                                        _fileLogging.WriteLine($"LastRunDate: {capaErrorFromCIDB.LastRunDate}");
-
-                                    }
-
-                                    if (string.IsNullOrEmpty(capaErrorFromCIDB.LastRunDate.ToString()) || capaErrorFromCIDB.LastRunDate == 0)
-                                    {
-                                        // TODO Remove. If LastRunDate noot the same the update the ErrorDB
-                                        if (bDebug)
-                                        {
-                                            _fileLogging.WriteLine($"Item is in ErrorDB but the job has never run (UNITID: {capaErrorFromCIDB.UnitID} JOBID: {capaErrorFromCIDB.PackageID})");
-                                        }
-
-                                        continue;
-                                    }
-                                    else if (capaErrorFromCIDB.LastRunDate != capaErrorFromErrDB.LastRunDate)
-                                    {
-                                        _fileLogging.WriteLine($"LastRunDate changed from {capaErrorFromErrDB.LastRunDate} to {capaErrorFromCIDB.LastRunDate}");
-                                        _fileLogging.WriteLine($"Updating ErrorDB with new status (UNITID: {capaErrorFromCIDB.UnitID} JOBID: {capaErrorFromCIDB.PackageID})");
-                                        errorDB.UpdateErrorStatus(capaErrorFromCIDB, capaInstallerDB, capaErrorFromErrDB.LastErrorType);
-                                    }
-                                    else
-                                    {
-                                        if (bDebug)
-                                        {
-                                            _fileLogging.WriteLine($"LastRunDate is the same {capaErrorFromErrDB.LastRunDate}");
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    _fileLogging.WriteLine($"Inserting new item into ErrorDB (UNITID: {capaErrorFromCIDB.UnitID} JOBID: {capaErrorFromCIDB.PackageID})");
-                                    errorDB.InsertError(capaErrorFromCIDB, capaInstallerDB);
-                                }
-
-                            }
-
                         }
                     }
+
+                    #endregion
 
                     /*
                      TODO: Clean up in ErrorDB for packages that are no longer in CapaInstaller and units that are no longer in CapaInstaller
