@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -123,44 +124,41 @@ namespace Capa_Error_Explorer_Service
             }
         }
 
-        public void UpdateErrorStatus(CapaError capaError, CapaInstallerDB capaInstallerDB, string currentErrorTypeFromErrorDB)
+        public void UpdateErrorStatus(CapaError capaErrorNewData, bool bDebug)
         {
-            string sCurrentErrorType = "NULL";
-            string sLastErrorType = "NULL";
+            CapaError capaErrorFromErrorDB = this.GetError(capaErrorNewData.UnitID, capaErrorNewData.PackageID, bDebug);
 
-            if (string.IsNullOrEmpty(currentErrorTypeFromErrorDB) == false)
+            if (string.IsNullOrEmpty(capaErrorFromErrorDB.CurrentErrorType) == false)
             {
-                capaError.LastErrorType = currentErrorTypeFromErrorDB;
+                capaErrorFromErrorDB.LastErrorType = capaErrorFromErrorDB.CurrentErrorType;
             }
 
-            capaError.SetErrorType();
+            capaErrorFromErrorDB.Status = capaErrorNewData.Status;
+            capaErrorFromErrorDB.LastRunDate = capaErrorNewData.LastRunDate;
+            capaErrorFromErrorDB.Log = capaErrorNewData.Log;
+            capaErrorFromErrorDB.RunCount = capaErrorFromErrorDB.RunCount + 1;
 
-            if (capaError.CurrentErrorType != null)
+            switch (capaErrorNewData.Status.ToLower())
             {
-                sCurrentErrorType = $"'{capaError.CurrentErrorType}'";
-            }
-            if (capaError.LastErrorType != null)
-            {
-                sLastErrorType = $"'{capaError.LastErrorType}'";
+                case "cancel":
+                case "uninstallcancel":
+                    capaErrorFromErrorDB.CancelledCount = capaErrorFromErrorDB.CancelledCount + 1;
+                    break;
+                case "failed":
+                case "postfailed":
+                case "uninstallfailed":
+                    capaErrorFromErrorDB.ErrorCount = capaErrorFromErrorDB.ErrorCount + 1;
+                    break;
             }
 
-            string query = @$"UPDATE [Capa_Errors]
-                                SET [Status] = '{capaError.Status}',
-                                    [LastRunDate] = '{capaError.LastRunDate}',
-                                    [RunCount] = [RunCount] + {capaError.RunCount},
-                                    [CurrentErrorType] = {sCurrentErrorType},
-                                    [UnitUUID] = '{capaError.UnitUUID}',
-                                    [PackageGUID] = '{capaError.PackageGUID}',
-                                    [UnitName] = '{capaError.UnitName}',
-                                    [PackageName] = '{capaError.PackageName}',
-                                    [PackageVersion] = '{capaError.PackageVersion}',
-                                    [CMPID] = '{capaError.CMPID}',
-                                    [TYPE] = '{capaError.Type}',
-                                    [ErrorCount] = [ErrorCount] + {capaError.ErrorCount},
-                                    [LastErrorType] = {sLastErrorType},
-                                    [CancelledCount] = [CancelledCount] + {capaError.CancelledCount},
-                                    [PackageRecurrence] = '{capaError.PackageRecurrence}'
-                                WHERE [UnitID] = {capaError.UnitID}AND [PackageID] = {capaError.PackageID}";
+            capaErrorFromErrorDB.SetErrorType();
+
+            string query = $"UPDATE [Capa_Errors] SET [Status] = '{capaErrorFromErrorDB.Status}',[LastRunDate] = {capaErrorFromErrorDB.LastRunDate},[RunCount] = {capaErrorFromErrorDB.RunCount},[CurrentErrorType] = '{capaErrorFromErrorDB.CurrentErrorType}',[ErrorCount] = {capaErrorFromErrorDB.ErrorCount},[LastErrorType] = '{capaErrorFromErrorDB.LastErrorType}',[CancelledCount] = {capaErrorFromErrorDB.CancelledCount} WHERE UnitID = {capaErrorFromErrorDB.UnitID} AND PackageID = {capaErrorFromErrorDB.PackageID}";
+
+            if (bDebug)
+            {
+                FileLogging.WriteLine($"Query: {query}");
+            }
 
             try
             {
@@ -178,6 +176,7 @@ namespace Capa_Error_Explorer_Service
             }
             catch (Exception ex)
             {
+                FileLogging.WriteErrorLine($"UnitID: {capaErrorFromErrorDB.UnitID} PackageID: {capaErrorFromErrorDB.PackageID}");
                 FileLogging.WriteErrorLine($"ErrorDB.UpdateErrorStatus: {ex.Message}");
             }
         }
@@ -223,7 +222,7 @@ namespace Capa_Error_Explorer_Service
 
         public List<CapaError> Get_NotIn_Capa_Error()
         {
-            string query = "SELECT [UNITID],[PackageID],[STATUS],[LASTRUNDATE],[LOG],[UnitUUID],[UnitName],[TYPE],[PackageGUID],[PackageName],[PackageVersion],[RECURRENCE] FROM [V_CE_NotIn_Capa_Errors]";
+            string query = "SELECT TOP (1000) [UNITID],[PackageID],[STATUS],[LASTRUNDATE],[LOG],[UnitUUID],[UnitName],[TYPE],[PackageGUID],[PackageName],[PackageVersion],[RECURRENCE] FROM [V_CE_NotIn_Capa_Errors]";
             List<CapaError> capaErrors = new List<CapaError>();
             CapaError capaError = new CapaError();
 
@@ -267,6 +266,47 @@ namespace Capa_Error_Explorer_Service
             catch (Exception ex)
             {
                 FileLogging.WriteErrorLine($"ErrorDB.Get_NotIn_Capa_Error: {ex.Message}");
+                return null;
+            }
+        }
+
+        public List<CapaError> Get_LastRunDate_Has_Changed()
+        {
+            string query = "SELECT TOP (1000) [UNITID] ,[PackageID] ,[STATUS] ,[LASTRUNDATE] ,[LOG] FROM [dbo].[V_CE_LastRunDate_Has_Changed]";
+            List<CapaError> capaErrors = new List<CapaError>();
+            CapaError capaError = new CapaError();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                capaError.ResetObj();
+
+                                capaError.UnitID = reader.GetInt32(0);
+                                capaError.PackageID = reader.GetInt32(1);
+                                capaError.Status = reader.GetString(2);
+                                capaError.LastRunDate = reader.GetInt32(3);
+                                capaError.Log = reader.GetString(4);
+
+                                capaErrors.Add(capaError);
+                            }
+                        }
+                    }
+                }
+
+                return capaErrors;
+            }
+            catch (Exception ex)
+            {
+                FileLogging.WriteErrorLine($"ErrorDB.Get_LastRunDate_Has_Changed: {ex.Message}");
                 return null;
             }
         }

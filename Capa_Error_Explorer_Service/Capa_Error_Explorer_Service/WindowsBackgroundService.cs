@@ -37,7 +37,7 @@ namespace Capa_Error_Explorer_Service
 
                     #region Insert things that are not in Capa_Errors tabel
                     capaErrors = errorDB.Get_NotIn_Capa_Error();
-                    if (capaErrors != null)
+                    if (capaErrors != null && capaErrors.Count > 0)
                     {
                         _fileLogging.WriteLine($"Inserting {capaErrors.Count} new rows into Capa_Error");
                         foreach (CapaError capaError in capaErrors)
@@ -55,6 +55,27 @@ namespace Capa_Error_Explorer_Service
                         }
                     }
 
+                    #endregion
+                    #region Update Capa_Error table with new values from CapaInstaller
+                    capaErrors = errorDB.Get_LastRunDate_Has_Changed();
+
+                    if (capaErrors != null && capaErrors.Count > 0)
+                    {
+                        _fileLogging.WriteLine($"Updating {capaErrors.Count} rows in Capa_Error");
+                        foreach (CapaError capaError in capaErrors)
+                        {
+                            try
+                            {
+                                errorDB.UpdateErrorStatus(capaError, bDebug);
+                                _fileLogging.WriteLine($"Updated PackageID: {capaError.PackageID} UnitID: {capaError.UnitID}");
+                            }
+                            catch (Exception ex)
+                            {
+                                _fileLogging.WriteErrorLine($"Exception: {ex.Message}");
+                                _logger.LogError(ex, "{Message}", ex.Message);
+                            }
+                        }
+                    }
                     #endregion
 
                     /*
