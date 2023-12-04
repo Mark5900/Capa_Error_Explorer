@@ -1,7 +1,7 @@
-﻿USE [Test]
+USE [Test]
 GO
 
-/****** Object: View [dbo].[V_CE_NotIn_Capa_Errors] Script Date: 12/4/2023 6:59:36 PM ******/
+/****** Object: View [dbo].[V_CE_NotIn_Capa_Errors] Script Date: 12/4/2023 11:01:37 PM ******/
 SET ANSI_NULLS ON
 GO
 

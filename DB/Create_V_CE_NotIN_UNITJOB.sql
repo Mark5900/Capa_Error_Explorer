@@ -1,7 +1,7 @@
-﻿USE [Test]
+USE [Test]
 GO
 
-/****** Object: View [dbo].[V_CE_NotIN_UNITJOB] Script Date: 12/4/2023 7:00:05 PM ******/
+/****** Object: View [dbo].[V_CE_NotIN_UNITJOB] Script Date: 12/4/2023 11:02:13 PM ******/
 SET ANSI_NULLS ON
 GO
 

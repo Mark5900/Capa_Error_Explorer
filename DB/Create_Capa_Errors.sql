@@ -1,7 +1,7 @@
-﻿USE [Test]
+USE [Test]
 GO
 
-/****** Object: Table [dbo].[Capa_Errors] Script Date: 12/4/2023 7:00:28 PM ******/
+/****** Object: Table [dbo].[Capa_Errors] Script Date: 12/4/2023 11:00:25 PM ******/
 SET ANSI_NULLS ON
 GO
 

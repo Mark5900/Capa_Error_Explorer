@@ -28,6 +28,7 @@ namespace Capa_Error_Explorer_Service
                 CapaInstallerDB capaInstallerDB = new CapaInstallerDB();
                 ErrorDB errorDB = new ErrorDB();
                 List<CapaError> capaErrors;
+                List<UnitInstallDate> unitInstallDates;
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
@@ -77,11 +78,47 @@ namespace Capa_Error_Explorer_Service
                         }
                     }
                     #endregion
+                    #region Clean up Capa_Error
+                    capaErrors = errorDB.Get_NotIn_UNITJOB();
+                    if (capaErrors != null && capaErrors.Count > 0)
+                    {
+                        _fileLogging.WriteLine($"Deleting {capaErrors.Count} rows from Capa_Error");
+                        foreach (CapaError capaError in capaErrors)
+                        {
+                            try
+                            {
+                                errorDB.DeleteError(capaError);
+                                _fileLogging.WriteLine($"Deleted PackageID: {capaError.PackageID} UnitID: {capaError.UnitID}");
+                            }
+                            catch (Exception ex)
+                            {
+                                _fileLogging.WriteErrorLine($"Exception: {ex.Message}");
+                                _logger.LogError(ex, "{Message}", ex.Message);
+                            }
+                        }
+                    }
 
-                    /*
-                     TODO: Clean up in ErrorDB for packages that are no longer in CapaInstaller and units that are no longer in CapaInstaller
-                     But also in case of package is unliked from unit.
-                    */
+                    #endregion
+                    #region Insert things that are not in UnitInstallDate tabel
+                    unitInstallDates = errorDB.Get_NotIn_UnitInstallDate();
+                    if (unitInstallDates != null && unitInstallDates.Count > 0)
+                    {
+                        _fileLogging.WriteLine($"Inserting {unitInstallDates.Count} new rows into unitInstallDate");
+                        foreach (UnitInstallDate unitInstallDate in unitInstallDates)
+                        {
+                            try
+                            {
+                                errorDB.InsertInstallDate(unitInstallDate);
+                                _fileLogging.WriteLine($"Inserted UnitID: {unitInstallDate.UnitID} in UnitInstallDate");
+                            }
+                            catch (Exception ex)
+                            {
+                                _fileLogging.WriteErrorLine($"Exception: {ex.Message}");
+                                _logger.LogError(ex, "{Message}", ex.Message);
+                            }
+                        }
+                    }
+                    #endregion
 
                     // TODO: Handle reinstallation of a unit remove it from the DB
                     // TODO Skip when package status is Installing, Uninstalling, Advertised and PostInstalling

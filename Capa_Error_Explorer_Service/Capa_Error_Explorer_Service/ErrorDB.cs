@@ -310,5 +310,128 @@ namespace Capa_Error_Explorer_Service
                 return null;
             }
         }
+
+        public List<CapaError> Get_NotIn_UNITJOB()
+        {
+            string query = "SELECT TOP (1000) [UnitID],[PackageID] FROM [dbo].[V_CE_NotIN_UNITJOB]";
+            List<CapaError> capaErrors = new List<CapaError>();
+            CapaError capaError = new CapaError();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                capaError.ResetObj();
+
+                                capaError.UnitID = reader.GetInt32(0);
+                                capaError.PackageID = reader.GetInt32(1);
+
+                                capaErrors.Add(capaError);
+                            }
+                        }
+                    }
+                }
+
+                return capaErrors;
+            }
+            catch (Exception ex)
+            {
+                FileLogging.WriteErrorLine($"ErrorDB.Get_NotIn_UNITJOB: {ex.Message}");
+                return null;
+            }
+        }
+
+        public void DeleteError(CapaError capaError)
+        {
+            string query = $"DELETE FROM [Capa_Errors] WHERE UnitID = {capaError.UnitID} AND PackageID = {capaError.PackageID}";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                FileLogging.WriteErrorLine($"ErrorDB.DeleteError: {ex.Message}");
+            }
+        }
+
+        public List<UnitInstallDate> Get_NotIn_UnitInstallDate()
+        {
+            string query = "SELECT TOP (1) [UNITID],[VALUE] FROM [V_CE_NotIn_UnitInstallDate]";
+            List<UnitInstallDate> unitInstallDates = new List<UnitInstallDate>();
+            UnitInstallDate unitInstallDate = new UnitInstallDate();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                unitInstallDate.ResetObj();
+
+                                unitInstallDate.UnitID = reader.GetInt32(0);
+                                unitInstallDate.VALUE = reader.GetString(1);
+
+                                unitInstallDates.Add(unitInstallDate);
+                            }
+                        }
+                    }
+                }
+
+                return unitInstallDates;
+            }
+            catch (Exception ex)
+            {
+                FileLogging.WriteErrorLine($"ErrorDB.Get_NotIn_UNITJOB: {ex.Message}");
+                return null;
+            }
+        }
+
+        public void InsertInstallDate(UnitInstallDate unitInstallDate)
+        {
+            string query = $"INSERT INTO [UnitInstallDate] ([UNITID], [VALUE]) VALUES ('{unitInstallDate.UnitID}','{unitInstallDate.VALUE}')";
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                FileLogging.WriteErrorLine($"ErrorDB.InsertError: {ex.Message}");
+            }
+        }
     }
 }

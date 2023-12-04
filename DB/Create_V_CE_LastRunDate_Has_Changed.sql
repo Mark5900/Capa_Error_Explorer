@@ -1,7 +1,7 @@
-﻿USE [Test]
+USE [Test]
 GO
 
-/****** Object: View [dbo].[V_CE_LastRunDate_Has_Changed] Script Date: 12/4/2023 6:58:42 PM ******/
+/****** Object: View [dbo].[V_CE_LastRunDate_Has_Changed] Script Date: 12/4/2023 11:01:23 PM ******/
 SET ANSI_NULLS ON
 GO
 
