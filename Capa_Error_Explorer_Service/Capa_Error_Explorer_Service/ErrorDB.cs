@@ -238,7 +238,7 @@ namespace Capa_Error_Explorer_Service
                         {
                             while (reader.Read())
                             {
-                                capaError.ResetObj();
+                                capaError = new CapaError();
 
                                 capaError.UnitID = reader.GetInt32(0);
                                 capaError.PackageID = reader.GetInt32(1);
@@ -288,7 +288,7 @@ namespace Capa_Error_Explorer_Service
                         {
                             while (reader.Read())
                             {
-                                capaError.ResetObj();
+                                capaError = new CapaError();
 
                                 capaError.UnitID = reader.GetInt32(0);
                                 capaError.PackageID = reader.GetInt32(1);
@@ -329,7 +329,7 @@ namespace Capa_Error_Explorer_Service
                         {
                             while (reader.Read())
                             {
-                                capaError.ResetObj();
+                                capaError = new CapaError();
 
                                 capaError.UnitID = reader.GetInt32(0);
                                 capaError.PackageID = reader.GetInt32(1);
@@ -375,7 +375,7 @@ namespace Capa_Error_Explorer_Service
 
         public List<UnitInstallDate> Get_NotIn_UnitInstallDate()
         {
-            string query = "SELECT TOP (1) [UNITID],[VALUE] FROM [V_CE_NotIn_UnitInstallDate]";
+            string query = "SELECT TOP (1000) [UNITID],[VALUE] FROM [V_CE_NotIn_UnitInstallDate]";
             List<UnitInstallDate> unitInstallDates = new List<UnitInstallDate>();
             UnitInstallDate unitInstallDate = new UnitInstallDate();
 
@@ -391,7 +391,7 @@ namespace Capa_Error_Explorer_Service
                         {
                             while (reader.Read())
                             {
-                                unitInstallDate.ResetObj();
+                                unitInstallDate = new UnitInstallDate();
 
                                 unitInstallDate.UnitID = reader.GetInt32(0);
                                 unitInstallDate.VALUE = reader.GetString(1);
