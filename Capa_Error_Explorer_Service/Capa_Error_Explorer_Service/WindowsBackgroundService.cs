@@ -87,7 +87,7 @@ namespace Capa_Error_Explorer_Service
                         {
                             try
                             {
-                                errorDB.DeleteError(capaError);
+                                errorDB.DeleteError(capaError.UnitID, capaError.PackageID);
                                 _fileLogging.WriteLine($"Deleted PackageID: {capaError.PackageID} UnitID: {capaError.UnitID}");
                             }
                             catch (Exception ex)
@@ -119,8 +119,28 @@ namespace Capa_Error_Explorer_Service
                         }
                     }
                     #endregion
-
-                    // TODO: Handle reinstallation of a unit remove it from the DB
+                    #region Handle reinstallation of a unit remove it from the DB
+                    unitInstallDates = errorDB.Get_UnitInstallDate_Has_Changed();
+                    if (unitInstallDates != null && unitInstallDates.Count > 0)
+                    {
+                        _fileLogging.WriteLine($"Deleting {unitInstallDates.Count} rows from UnitInstallDate");
+                        foreach (UnitInstallDate unitInstallDate in unitInstallDates)
+                        {
+                            try
+                            {
+                                errorDB.DeleteError(unitInstallDate.UnitID, 0);
+                                _fileLogging.WriteLine($"Deleted UnitID: {unitInstallDate.UnitID} from Capa_Errors");
+                                errorDB.UpdateUnitInstallDate(unitInstallDate);
+                                _fileLogging.WriteLine($"Updated UnitID: {unitInstallDate.UnitID} in UnitInstallDate");
+                            }
+                            catch (Exception ex)
+                            {
+                                _fileLogging.WriteErrorLine($"Exception: {ex.Message}");
+                                _logger.LogError(ex, "{Message}", ex.Message);
+                            }
+                        }
+                    }
+                    #endregion
                     // TODO Skip when package status is Installing, Uninstalling, Advertised and PostInstalling
 
                     _fileLogging.WriteLine("DONE");

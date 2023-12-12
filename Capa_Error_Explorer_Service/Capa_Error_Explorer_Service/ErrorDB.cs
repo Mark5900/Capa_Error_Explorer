@@ -243,8 +243,6 @@ namespace Capa_Error_Explorer_Service
                                 capaError.UnitID = reader.GetInt32(0);
                                 capaError.PackageID = reader.GetInt32(1);
                                 capaError.Status = reader.GetString(2);
-                                capaError.LastRunDate = reader.GetInt32(3);
-                                capaError.Log = reader.GetString(4);
                                 capaError.UnitUUID = reader.GetGuid(5);
                                 capaError.UnitName = reader.GetString(6);
                                 capaError.Type = reader.GetInt32(7);
@@ -252,6 +250,15 @@ namespace Capa_Error_Explorer_Service
                                 capaError.PackageName = reader.GetString(9);
                                 capaError.PackageVersion = reader.GetString(10);
                                 capaError.PackageRecurrence = reader.GetString(11);
+
+                                if (!reader.IsDBNull(3))
+                                {
+                                    capaError.LastRunDate = reader.GetInt32(3);
+                                }
+                                if (!reader.IsDBNull(4))
+                                {
+                                    capaError.Log = reader.GetString(4);
+                                }
 
                                 capaErrors.Add(capaError);
                             }
@@ -266,6 +273,7 @@ namespace Capa_Error_Explorer_Service
             catch (Exception ex)
             {
                 FileLogging.WriteErrorLine($"ErrorDB.Get_NotIn_Capa_Error: {ex.Message}");
+                FileLogging.WriteErrorLine($"UnitID: {capaError.UnitID} PackageID: {capaError.PackageID}");
                 return null;
             }
         }
@@ -349,9 +357,18 @@ namespace Capa_Error_Explorer_Service
             }
         }
 
-        public void DeleteError(CapaError capaError)
+        public void DeleteError(int UnitID, int PackageID)
         {
-            string query = $"DELETE FROM [Capa_Errors] WHERE UnitID = {capaError.UnitID} AND PackageID = {capaError.PackageID}";
+            string query = "";
+
+            if (PackageID == 0)
+            {
+                query = $"DELETE FROM [Capa_Errors] WHERE UnitID = {UnitID}";
+            }
+            else
+            {
+                query = $"DELETE FROM [Capa_Errors] WHERE UnitID = {UnitID} AND PackageID = {PackageID}";
+            }
 
             try
             {
@@ -414,6 +431,67 @@ namespace Capa_Error_Explorer_Service
         public void InsertInstallDate(UnitInstallDate unitInstallDate)
         {
             string query = $"INSERT INTO [UnitInstallDate] ([UNITID], [VALUE]) VALUES ('{unitInstallDate.UnitID}','{unitInstallDate.VALUE}')";
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                FileLogging.WriteErrorLine($"ErrorDB.InsertError: {ex.Message}");
+            }
+        }
+
+        public List<UnitInstallDate> Get_UnitInstallDate_Has_Changed()
+        {
+            string query = "SELECT TOP (1000) [UNITID],[VALUE] FROM [dbo].[V_CE_UnitInstallDate_Has_Changed]";
+            List<UnitInstallDate> unitInstallDates = new List<UnitInstallDate>();
+            UnitInstallDate unitInstallDate = new UnitInstallDate();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                unitInstallDate = new UnitInstallDate();
+
+                                unitInstallDate.UnitID = reader.GetInt32(0);
+                                unitInstallDate.VALUE = reader.GetString(1);
+
+                                unitInstallDates.Add(unitInstallDate);
+                            }
+                        }
+                    }
+                }
+
+                return unitInstallDates;
+            }
+            catch (Exception ex)
+            {
+                FileLogging.WriteErrorLine($"ErrorDB.Get_NotIn_UNITJOB: {ex.Message}");
+                return null;
+            }
+        }
+
+        public void UpdateUnitInstallDate(UnitInstallDate unitInstallDate)
+        {
+            string query = $"UPDATE [UnitInstallDate] SET [VALUE] = '{unitInstallDate.VALUE}' WHERE UNITID = {unitInstallDate.UnitID}";
             try
             {
                 using (SqlConnection connection = new SqlConnection(this.sConnectionString))
