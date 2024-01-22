@@ -96,7 +96,7 @@ namespace Capa_Error_Explorer_Service
                 case "installed":
                     break;
                 default:
-                    // TODO: Add error types 
+                    // TODO: Add error types and update if it is existing in db and unknown, maybe?
                     this.CurrentErrorType = "Unknown";
                     break;
             }
