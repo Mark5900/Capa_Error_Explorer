@@ -141,7 +141,6 @@ namespace Capa_Error_Explorer_Service
                         }
                     }
                     #endregion
-                    // TODO Skip when package status is Installing, Uninstalling, Advertised and PostInstalling
 
                     _fileLogging.WriteLine("DONE");
                     _fileLogging.WriteLine("");
