@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Capa_Error_Explorer_Service
 {
@@ -14,10 +15,24 @@ namespace Capa_Error_Explorer_Service
         // TODO: Keep log files for 30 days
         public FileLogging()
         {
-            if (!System.IO.Directory.Exists(_path))
+            if (!Directory.Exists(_path))
             {
-                System.IO.Directory.CreateDirectory(_path);
+                Directory.CreateDirectory(_path);
                 this.WriteLine("Directory created");
+            }
+
+            string[] files = Directory.GetFiles(_path);
+            if (files.Length > 0)
+            {
+                foreach (string file in files)
+                {
+                    FileInfo info = new FileInfo(file);
+                    if (info.CreationTime < DateTime.Now.AddDays(-30))
+                    {
+                        info.Delete();
+                        this.WriteLine($"Log file deleted: {file}");
+                    }
+                }
             }
         }
 

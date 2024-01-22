@@ -96,6 +96,7 @@ namespace Capa_Error_Explorer_Service
                 case "installed":
                     break;
                 default:
+                    // TODO: Add error types 
                     this.CurrentErrorType = "Unknown";
                     break;
             }
