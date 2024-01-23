@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\SharedFiles\Custom Data Types\CapaError.cs" Link="Custom Data Types\CapaError.cs" />
+    <Compile Include="..\..\SharedFiles\Custom Data Types\GlobalSettings.cs" Link="Custom Data Types\GlobalSettings.cs" />
+    <Compile Include="..\..\SharedFiles\Custom Data Types\SQL.cs" Link="Custom Data Types\SQL.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Custom Data Types\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>

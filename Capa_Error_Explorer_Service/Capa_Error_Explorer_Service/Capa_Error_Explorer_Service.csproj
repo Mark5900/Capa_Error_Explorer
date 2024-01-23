@@ -8,6 +8,42 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\SharedFiles\CapaInstallerDB.cs" Link="CapaInstallerDB.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="..\..\SharedFiles\Custom Data Types\CapaError.cs" Link="Custom Data Types\CapaError.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="..\..\SharedFiles\Custom Data Types\CapaPackage.cs" Link="Custom Data Types\CapaPackage.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="..\..\SharedFiles\Custom Data Types\CapaUnit.cs" Link="Custom Data Types\CapaUnit.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="..\..\SharedFiles\Custom Data Types\CapaUnitJob.cs" Link="Custom Data Types\CapaUnitJob.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="..\..\SharedFiles\Custom Data Types\GlobalSettings.cs" Link="Custom Data Types\GlobalSettings.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="..\..\SharedFiles\Custom Data Types\SQL.cs" Link="Custom Data Types\SQL.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="..\..\SharedFiles\Custom Data Types\UnitInstallDate.cs" Link="Custom Data Types\UnitInstallDate.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="..\..\SharedFiles\ErrorDB.cs" Link="ErrorDB.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\SharedFiles\appsettings.json" Link="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
@@ -19,5 +55,9 @@
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Custom Data Types\" />
   </ItemGroup>
 </Project>

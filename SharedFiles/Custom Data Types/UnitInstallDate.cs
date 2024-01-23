@@ -10,11 +10,5 @@ namespace Capa_Error_Explorer_Service
     {
         public int UnitID { get; set; }
         public string VALUE { get; set; }
-
-        public void ResetObj()
-        {
-            this.UnitID = 0;
-            this.VALUE = "";
-        }
     }
 }

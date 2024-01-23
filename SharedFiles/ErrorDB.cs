@@ -11,42 +11,6 @@ namespace Capa_Error_Explorer_Service
 {
     internal class ErrorDB : SQL
     {
-        public bool DoesErrorExist(CapaError capaError)
-        {
-            bool bReturn = false;
-            string query = $"SELECT COUNT(*) FROM [Capa_Errors] WHERE UnitID = {capaError.UnitID} AND PackageID = {capaError.PackageID}";
-
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
-                {
-                    connection.Open();
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                if (reader.GetInt32(0) > 0)
-                                {
-                                    bReturn = true;
-                                }
-                            }
-                        }
-                    }
-
-                    connection.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                FileLogging.WriteErrorLine($"ErrorDB.DoesErrorExist: {ex.Message}");
-            }
-
-            return bReturn;
-        }
-
         public CapaError GetError(int UnitID, int PackageID, bool bDebug)
         {
             CapaError capaError = new CapaError();
