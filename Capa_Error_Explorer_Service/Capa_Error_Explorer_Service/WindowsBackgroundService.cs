@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Capa_Error_Explorer;
 
 namespace Capa_Error_Explorer_Service
 {
@@ -25,7 +26,6 @@ namespace Capa_Error_Explorer_Service
                 _fileLogging.WriteLine($"ErrorExplorerSQLDB: {globalSettings.ErrorExplorerSQLDB}");
                 bDebug = globalSettings.bDebug;
 
-                CapaInstallerDB capaInstallerDB = new CapaInstallerDB();
                 ErrorDB errorDB = new ErrorDB();
                 List<CapaError> capaErrors;
                 List<UnitInstallDate> unitInstallDates;
@@ -33,7 +33,6 @@ namespace Capa_Error_Explorer_Service
                 while (!stoppingToken.IsCancellationRequested)
                 {
 
-                    capaInstallerDB.SetConnectionString(globalSettings.SQLServer, globalSettings.CapaSQLDB);
                     errorDB.SetConnectionString(globalSettings.SQLServer, globalSettings.ErrorExplorerSQLDB);
 
                     #region Insert things that are not in Capa_Errors tabel

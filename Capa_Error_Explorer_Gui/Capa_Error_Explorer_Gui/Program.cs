@@ -1,4 +1,3 @@
-using Capa_Error_Explorer_Service;
 using System.Diagnostics;
 
 namespace Capa_Error_Explorer_Gui

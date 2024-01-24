@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace Capa_Error_Explorer_Service
+namespace Capa_Error_Explorer_Gui
 {
 
     internal class FileLogging

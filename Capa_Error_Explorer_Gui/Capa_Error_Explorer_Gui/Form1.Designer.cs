@@ -1,5 +1,4 @@
-﻿using Capa_Error_Explorer_Service;
-
+﻿
 namespace Capa_Error_Explorer_Gui
 {
     partial class Form1
