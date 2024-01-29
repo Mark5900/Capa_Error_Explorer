@@ -8,9 +8,6 @@ namespace Capa_Error_Explorer_Gui
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        public Form1(GlobalSettings globalSettings)
-        {      }
-
         /// <summary>
         ///  Clean up any resources being used.
         /// </summary>
@@ -32,12 +29,49 @@ namespace Capa_Error_Explorer_Gui
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            buttonRefresh = new Button();
+            dataGridView1 = new DataGridView();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            SuspendLayout();
+            // 
+            // buttonRefresh
+            // 
+            buttonRefresh.Location = new Point(713, 12);
+            buttonRefresh.Name = "buttonRefresh";
+            buttonRefresh.Size = new Size(75, 23);
+            buttonRefresh.TabIndex = 0;
+            buttonRefresh.Text = "Refresh";
+            buttonRefresh.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView1
+            // 
+            dataGridView1.AllowUserToAddRows = false;
+            dataGridView1.AllowUserToDeleteRows = false;
+            dataGridView1.AllowUserToOrderColumns = true;
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Location = new Point(22, 66);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.ReadOnly = true;
+            dataGridView1.Size = new Size(704, 328);
+            dataGridView1.TabIndex = 1;
+            // 
+            // Form1
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(800, 450);
+            Controls.Add(dataGridView1);
+            Controls.Add(buttonRefresh);
+            Name = "Form1";
+            Text = "Form1";
+            Load += Form1_Load;
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private Button buttonRefresh;
+        private DataGridView dataGridView1;
     }
 }

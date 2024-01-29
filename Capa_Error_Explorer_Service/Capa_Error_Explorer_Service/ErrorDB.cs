@@ -162,6 +162,26 @@ namespace Capa_Error_Explorer_Service
                 sLastErrorType = $"'{capaError.LastErrorType}'";
             }
 
+            capaError.RunCount = 1;
+
+            if (capaError.Status.ToLower() == "cancel" || capaError.Status.ToLower() == "uninstallcancel")
+            {
+                capaError.CancelledCount = 1;
+            }
+            else
+            {
+                capaError.CancelledCount = 0;
+            }
+
+            if (capaError.Status.ToLower() == "failed" || capaError.Status.ToLower() == "postfailed" || capaError.Status.ToLower() == "uninstallfailed")
+            {
+                capaError.ErrorCount = 1;
+            }
+            else
+            {
+                capaError.ErrorCount = 0;
+            }
+
             string query = "INSERT INTO [Capa_Errors] ([UnitID],[PackageID],[Status],[LastRunDate],[RunCount],[CurrentErrorType],[UnitUUID],[PackageGUID],[UnitName],[PackageName],[PackageVersion],[CMPID],[TYPE],[ErrorCount],[LastErrorType],[CancelledCount],[PackageRecurrence])" +
                 $"VALUES ('{capaError.UnitID}','{capaError.PackageID}','{capaError.Status}','{capaError.LastRunDate}','{capaError.RunCount}',{sCurrentErrorType},'{capaError.UnitUUID}','{capaError.PackageGUID}','{capaError.UnitName}','{capaError.PackageName}','{capaError.PackageVersion}','{capaError.CMPID}','{capaError.Type}','{capaError.ErrorCount}',{sLastErrorType},'{capaError.CancelledCount}','{capaError.PackageRecurrence}')";
 
