@@ -1,7 +1,7 @@
 ﻿
 namespace Capa_Error_Explorer_Gui
 {
-    partial class Form1
+    partial class FormMain
     {
         /// <summary>
         ///  Required designer variable.
@@ -36,12 +36,13 @@ namespace Capa_Error_Explorer_Gui
             // 
             // buttonRefresh
             // 
-            buttonRefresh.Location = new Point(713, 12);
+            buttonRefresh.Location = new Point(1015, 12);
             buttonRefresh.Name = "buttonRefresh";
             buttonRefresh.Size = new Size(75, 23);
             buttonRefresh.TabIndex = 0;
             buttonRefresh.Text = "Refresh";
             buttonRefresh.UseVisualStyleBackColor = true;
+            buttonRefresh.Click += buttonRefresh_Click;
             // 
             // dataGridView1
             // 
@@ -49,22 +50,24 @@ namespace Capa_Error_Explorer_Gui
             dataGridView1.AllowUserToDeleteRows = false;
             dataGridView1.AllowUserToOrderColumns = true;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(22, 66);
+            dataGridView1.Location = new Point(12, 47);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
-            dataGridView1.Size = new Size(704, 328);
+            dataGridView1.Size = new Size(1078, 391);
             dataGridView1.TabIndex = 1;
+            dataGridView1.CellDoubleClick += dataGridView1_CellDoubleClick;
             // 
-            // Form1
+            // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1102, 450);
             Controls.Add(dataGridView1);
             Controls.Add(buttonRefresh);
-            Name = "Form1";
-            Text = "Form1";
-            Load += Form1_Load;
+            Name = "FormMain";
+            Text = "Capa Error Explorer";
+            Load += FormMain_Load;
+            Resize += FormMain_Resize;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
         }

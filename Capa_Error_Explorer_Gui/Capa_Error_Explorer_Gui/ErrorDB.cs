@@ -14,6 +14,7 @@ namespace Capa_Error_Explorer_Gui
     {
         public List<CapaErrorSummary> GetCapaErrorSummary()
         {
+            //TODO: Do not include excluded packages
             string query = "Select \r\n\tPackageID\r\n\t,COUNT(*) AS TotalUnits\r\n\t,SUM(CASE WHEN [Status] = 'Installed' THEN 1 ELSE 0 END) AS StatusInstalledCount\r\n\t,SUM(CASE WHEN [Status] = 'Failed' THEN 1 ELSE 0 END) AS StatusFailedCount\r\n\t,SUM(CASE WHEN [Status] != 'Installed' AND [Status] != 'Failed' THEN 1 ELSE 0 END) AS OtherStatusCount\r\n\t,MAX(PackageName) AS PackageName\r\n\t,MAX(PackageVersion) AS PackageVersion\r\n\t,SUM([ErrorCount]) AS TotalErrorCount\r\n\t,SUM([CancelledCount]) AS TotalCancelledCount\r\nFrom Capa_Errors\r\nGROUP BY PackageID";
             List<CapaErrorSummary> capaErrorSummary = new List<CapaErrorSummary>();
             CapaErrorSummary capaErrorSummaryItem;
