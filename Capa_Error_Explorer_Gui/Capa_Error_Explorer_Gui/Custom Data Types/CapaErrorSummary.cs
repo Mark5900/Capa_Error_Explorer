@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Capa_Error_Explorer_Gui
 {
-    public class CapaErrorSummary
+    internal class CapaErrorSummary
     {
         public int PackageID { get; set; }
         public int TotalUnits { get; set; }

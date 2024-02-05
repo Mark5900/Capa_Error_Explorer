@@ -12,6 +12,7 @@ namespace Capa_Error_Explorer_Gui
         internal List<CapaErrorSummary> capaErrorSummary = new List<CapaErrorSummary>();
 
         //TODO: Add a way to exclude packages from the summary
+        //TODO: How to handle CMPID?
 
         public FormMain()
         {
@@ -23,14 +24,13 @@ namespace Capa_Error_Explorer_Gui
             try
             {
                 this.errorDB.SetConnectionString(globalSettings.SQLServer, globalSettings.ErrorExplorerSQLDB);
+                capaErrorSummary = errorDB.GetCapaErrorSummary();
             }
             catch (Exception ex)
             {
                 fileLogging.WriteErrorLine(ex.Message);
                 MessageBox.Show(ex.Message);
             }
-
-            capaErrorSummary = errorDB.GetCapaErrorSummary();
 
             this.AddColumnsToGridView();
             this.AddDataToGridView();
@@ -76,6 +76,7 @@ namespace Capa_Error_Explorer_Gui
         {
             capaErrorSummary = errorDB.GetCapaErrorSummary();
             this.AddDataToGridView();
+            dataGridView1.Sort(dataGridView1.Columns["TotalErrorCount"], ListSortDirection.Descending);
         }
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)

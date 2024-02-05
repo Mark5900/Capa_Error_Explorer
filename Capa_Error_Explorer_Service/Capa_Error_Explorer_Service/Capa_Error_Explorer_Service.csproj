@@ -25,7 +25,6 @@
     <Compile Include="..\..\SharedFiles\Custom Data Types\UnitInstallDate.cs" Link="Custom Data Types\UnitInstallDate.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="..\..\SharedFiles\ErrorDB.cs" Link="ErrorDB.cs" />
   </ItemGroup>
 
   <ItemGroup>
