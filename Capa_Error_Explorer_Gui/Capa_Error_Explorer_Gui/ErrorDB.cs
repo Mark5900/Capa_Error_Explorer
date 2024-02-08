@@ -170,5 +170,10 @@ namespace Capa_Error_Explorer_Gui
                 return null;
             }
         }
+
+        //public List<CapaError> GetCapaeErrorUnits(string packageName, string packageVersion, string errorType)
+        //{
+        //    string query = $""
+        //}
     }
 }

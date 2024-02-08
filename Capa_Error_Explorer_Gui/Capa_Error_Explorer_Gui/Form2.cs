@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
+using CapaInstaller;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -77,6 +80,46 @@ namespace Capa_Error_Explorer_Gui
         private void buttonRerunPackage_Click(object sender, EventArgs e)
         {
             //TODO: Add code to rerun package
+            try
+            {
+                SDK oSDK = new SDK();
+                bool bStatus = true;
+
+                bStatus = oSDK.SetDatabaseSettings(this.globalSettings.SQLServer, "CapaInstaller", false);
+                if (bStatus == false)
+                {
+                    throw new Exception("CI SDK: Error setting database settings");
+                }else
+                {
+                    fileLogging.WriteLine("CI SDK: Database settings set");
+                }
+
+                ArrayList aCmp = new ArrayList();
+                aCmp = oSDK.GetManagementPoints();
+                foreach (var cmp in aCmp)
+                {
+                    fileLogging.WriteLine($"CMP: {cmp}");
+                }
+
+                bStatus = oSDK.SetInstanceManagementPoint("2");
+                if (bStatus == false)
+                {
+                    throw new Exception("CI SDK: Error setting instance management point");
+                }
+
+                bStatus = oSDK.SetUnitPackageStatus("VHHO-LAER-JFO", "Computer", "OS Install - WS Klar til Brug", "v1.0", "1", "Waiting");
+                if (bStatus == false)
+                {
+                    throw new Exception("CI SDK: Error setting unit package status");
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                fileLogging.WriteErrorLine(ex.Message);
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Form2_Resize(object sender, EventArgs e)
