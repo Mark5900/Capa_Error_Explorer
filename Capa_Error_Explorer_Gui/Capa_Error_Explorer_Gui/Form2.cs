@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using CapaInstaller;
+﻿using CapaInstaller;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -82,10 +81,11 @@ namespace Capa_Error_Explorer_Gui
             //TODO: Add code to rerun package
             try
             {
+
                 SDK oSDK = new SDK();
                 bool bStatus = true;
 
-                bStatus = oSDK.SetDatabaseSettings(this.globalSettings.SQLServer, "CapaInstaller", false);
+                bStatus = oSDK.SetDatabaseSettings(this.globalSettings.SQLServer, this.globalSettings.CapaSQLDB, false);
                 if (bStatus == false)
                 {
                     throw new Exception("CI SDK: Error setting database settings");

@@ -31,6 +31,8 @@ namespace Capa_Error_Explorer_Gui
         {
             buttonRefresh = new Button();
             dataGridView1 = new DataGridView();
+            label1 = new Label();
+            comboBoxManagementPoint = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -57,11 +59,33 @@ namespace Capa_Error_Explorer_Gui
             dataGridView1.TabIndex = 1;
             dataGridView1.CellDoubleClick += dataGridView1_CellDoubleClick;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Cursor = Cursors.No;
+            label1.Location = new Point(773, 15);
+            label1.Name = "label1";
+            label1.Size = new Size(109, 15);
+            label1.TabIndex = 2;
+            label1.Text = "Management Point";
+            // 
+            // comboBoxManagementPoint
+            // 
+            comboBoxManagementPoint.FormattingEnabled = true;
+            comboBoxManagementPoint.Items.AddRange(new object[] { "All" });
+            comboBoxManagementPoint.Location = new Point(888, 12);
+            comboBoxManagementPoint.Name = "comboBoxManagementPoint";
+            comboBoxManagementPoint.Size = new Size(121, 23);
+            comboBoxManagementPoint.TabIndex = 3;
+            comboBoxManagementPoint.SelectionChangeCommitted += comboBoxManagementPoint_SelectionChangeCommitted;
+            // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1102, 450);
+            Controls.Add(comboBoxManagementPoint);
+            Controls.Add(label1);
             Controls.Add(dataGridView1);
             Controls.Add(buttonRefresh);
             Name = "FormMain";
@@ -70,11 +94,14 @@ namespace Capa_Error_Explorer_Gui
             Resize += FormMain_Resize;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private Button buttonRefresh;
         private DataGridView dataGridView1;
+        private Label label1;
+        private ComboBox comboBoxManagementPoint;
     }
 }

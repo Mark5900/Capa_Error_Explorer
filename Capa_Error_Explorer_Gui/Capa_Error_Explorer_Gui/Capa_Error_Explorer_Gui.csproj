@@ -25,7 +25,8 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
-    <PackageReference Include="System.ServiceModel.Primitives" Version="8.0.0" />
+    <PackageReference Include="System.Private.ServiceModel" Version="4.10.3" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.4.4" />
   </ItemGroup>
 
   <ItemGroup>

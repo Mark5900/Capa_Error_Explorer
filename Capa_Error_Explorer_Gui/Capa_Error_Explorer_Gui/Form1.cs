@@ -1,5 +1,5 @@
-
-
+using CapaInstaller;
+using System.Collections;
 using System.ComponentModel;
 
 namespace Capa_Error_Explorer_Gui
@@ -21,6 +21,8 @@ namespace Capa_Error_Explorer_Gui
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            this.AddDataToCombobox();
+
             try
             {
                 this.errorDB.SetConnectionString(globalSettings.SQLServer, globalSettings.ErrorExplorerSQLDB);
@@ -44,12 +46,26 @@ namespace Capa_Error_Explorer_Gui
             int newHeight;
             int newWidth;
 
+            #region buttonRefresh
             newX = this.Width - buttonRefresh.Width - 30;
             buttonRefresh.Location = new Point(newX, buttonRefresh.Location.Y);
+            #endregion
 
+            #region comboBoxManagementPoint
+            newX = buttonRefresh.Location.X - comboBoxManagementPoint.Width - 10;
+            comboBoxManagementPoint.Location = new Point(newX, comboBoxManagementPoint.Location.Y);
+            #endregion
+
+            #region label1
+            newX = comboBoxManagementPoint.Location.X - label1.Width - 10;
+            label1.Location = new Point(newX, label1.Location.Y);
+            #endregion
+
+            #region dataGridView1
             newHeight = this.Height - dataGridView1.Location.Y - 20;
             newWidth = this.Width - 40;
             dataGridView1.Size = new Size(newWidth, newHeight);
+            #endregion
         }
 
         private void AddColumnsToGridView()
@@ -86,6 +102,45 @@ namespace Capa_Error_Explorer_Gui
 
             Form2 form2 = new Form2(packageName, packageVersion);
             form2.Show();
+        }
+
+        private void AddDataToCombobox()
+        {
+            try
+            {
+                SDK oSDK = new SDK();
+                bool bStatus = true;
+
+                bStatus = oSDK.SetDatabaseSettings(this.globalSettings.SQLServer, this.globalSettings.CapaSQLDB, false);
+                if (bStatus == false)
+                {
+                    throw new Exception("CI SDK: Error setting database settings");
+                }
+                else
+                {
+                    fileLogging.WriteLine("CI SDK: Database settings set");
+                }
+
+                var aCmp = new ArrayList();
+                aCmp = oSDK.GetManagementPoints();
+                foreach (string cmp in aCmp)
+                {
+                    string[] item = cmp.Split("|");
+                    comboBoxManagementPoint.Items.Add($"{item[1]} | {item[0]}");
+                }
+
+                comboBoxManagementPoint.SelectedItem = comboBoxManagementPoint.Items[0];
+            }
+            catch (Exception ex)
+            {
+                fileLogging.WriteErrorLine(ex.Message);
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void comboBoxManagementPoint_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+
         }
     }
 }
