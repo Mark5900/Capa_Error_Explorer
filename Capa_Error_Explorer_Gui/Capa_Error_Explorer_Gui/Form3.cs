@@ -19,14 +19,16 @@ namespace Capa_Error_Explorer_Gui
         internal string packageName;
         internal string packageVersion;
         internal string currentErrorType;
+        internal string cmpID;
 
-        public Form3(string packageName, string packageVersion, string currentErrorType)
+        public Form3(string packageName, string packageVersion, string currentErrorType, string cmpID)
         {
             InitializeComponent();
 
             this.packageName = packageName;
             this.packageVersion = packageVersion;
             this.currentErrorType = currentErrorType;
+            this.cmpID = cmpID;
         }
 
         private void Form3_Load(object sender, EventArgs e)
@@ -36,7 +38,7 @@ namespace Capa_Error_Explorer_Gui
             try
             {
                 this.errorDB.SetConnectionString(globalSettings.SQLServer, globalSettings.ErrorExplorerSQLDB);
-                capaErrors = errorDB.GetCapaErrors(packageName, packageVersion, currentErrorType);
+                capaErrors = errorDB.GetCapaErrors(packageName, packageVersion, currentErrorType, cmpID);
             }
             catch (Exception ex)
             {
@@ -74,7 +76,12 @@ namespace Capa_Error_Explorer_Gui
 
         private void Form3_Resize(object sender, EventArgs e)
         {
-            //TODO: handle resize
+            int newHeight;
+            int newWidth;
+
+            newHeight = this.Height - dataGridView1.Location.Y - 20;
+            newWidth = this.Width - 40;
+            dataGridView1.Size = new Size(newWidth, newHeight);
         }
     }
 }

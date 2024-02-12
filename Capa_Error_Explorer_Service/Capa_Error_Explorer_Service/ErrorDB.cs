@@ -207,7 +207,7 @@ namespace Capa_Error_Explorer_Service
 
         public List<CapaError> Get_NotIn_Capa_Error()
         {
-            string query = "SELECT TOP (1000) [UNITID],[PackageID],[STATUS],[LASTRUNDATE],[LOG],[UnitUUID],[UnitName],[TYPE],[PackageGUID],[PackageName],[PackageVersion],[RECURRENCE] FROM [V_CE_NotIn_Capa_Errors]";
+            string query = "SELECT TOP (1000) [UNITID],[PackageID],[STATUS],[LASTRUNDATE],[LOG],[UnitUUID],[UnitName],[TYPE],[PackageGUID],[PackageName],[PackageVersion],[RECURRENCE],[CMPID] FROM [V_CE_NotIn_Capa_Errors]";
             List<CapaError> capaErrors = new List<CapaError>();
             CapaError capaError = new CapaError();
 
@@ -235,6 +235,7 @@ namespace Capa_Error_Explorer_Service
                                 capaError.PackageName = reader.GetString(9);
                                 capaError.PackageVersion = reader.GetString(10);
                                 capaError.PackageRecurrence = reader.GetString(11);
+                                capaError.CMPID = reader.GetInt32(12);
 
                                 if (!reader.IsDBNull(3))
                                 {

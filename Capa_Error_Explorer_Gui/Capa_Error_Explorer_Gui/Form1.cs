@@ -10,9 +10,9 @@ namespace Capa_Error_Explorer_Gui
         internal ErrorDB errorDB = new ErrorDB();
         internal FileLogging fileLogging = new FileLogging();
         internal List<CapaErrorSummary> capaErrorSummary = new List<CapaErrorSummary>();
+        internal string cmpId = "All";
 
         //TODO: Add a way to exclude packages from the summary
-        //TODO: How to handle CMPID?
 
         public FormMain()
         {
@@ -100,7 +100,7 @@ namespace Capa_Error_Explorer_Gui
             string packageName = dataGridView1.Rows[e.RowIndex].Cells["PackageName"].Value.ToString();
             string packageVersion = dataGridView1.Rows[e.RowIndex].Cells["PackageVersion"].Value.ToString();
 
-            Form2 form2 = new Form2(packageName, packageVersion);
+            Form2 form2 = new Form2(packageName, packageVersion, this.cmpId);
             form2.Show();
         }
 
@@ -140,7 +140,27 @@ namespace Capa_Error_Explorer_Gui
 
         private void comboBoxManagementPoint_SelectionChangeCommitted(object sender, EventArgs e)
         {
+            string selectedCmp = comboBoxManagementPoint.SelectedItem.ToString();
+            if (selectedCmp == "All")
+            {
+                capaErrorSummary = errorDB.GetCapaErrorSummary();
+            }
+            else
+            {
+                string[] item = selectedCmp.Split(" | ");
+                this.cmpId = item[1];
+                capaErrorSummary = errorDB.GetCapaErrorSummary(cmpId);
+            }
 
+            this.AddDataToGridView();
+            dataGridView1.Sort(dataGridView1.Columns["TotalErrorCount"], ListSortDirection.Descending);
+        }
+
+        private void buttonExcludePck_Click(object sender, EventArgs e)
+        {
+            FormExcludePackages formExcludePackages = new FormExcludePackages();
+            formExcludePackages.Show();
+            this.Hide();
         }
     }
 }

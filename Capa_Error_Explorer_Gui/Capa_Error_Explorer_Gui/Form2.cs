@@ -20,12 +20,14 @@ namespace Capa_Error_Explorer_Gui
         internal List<CapaErrorTypeSummary> capaErrorTypeSummary = new List<CapaErrorTypeSummary>();
         internal string packageName;
         internal string packageVersion;
+        internal string cmpId = "All";
 
-        public Form2(string packageName, string packageVersion)
+        public Form2(string packageName, string packageVersion, string cmpId)
         {
             InitializeComponent();
             this.packageName = packageName;
             this.packageVersion = packageVersion;
+            this.cmpId = cmpId;
         }
 
         private void Form2_Load(object sender, EventArgs e)
@@ -35,7 +37,7 @@ namespace Capa_Error_Explorer_Gui
             try
             {
                 this.errorDB.SetConnectionString(globalSettings.SQLServer, globalSettings.ErrorExplorerSQLDB);
-                capaErrorTypeSummary = errorDB.GetCapaErrorTypeSummary(packageName, packageVersion);
+                capaErrorTypeSummary = errorDB.GetCapaErrorTypeSummary(packageName, packageVersion, cmpId);
             }
             catch (Exception ex)
             {
@@ -89,7 +91,8 @@ namespace Capa_Error_Explorer_Gui
                 if (bStatus == false)
                 {
                     throw new Exception("CI SDK: Error setting database settings");
-                }else
+                }
+                else
                 {
                     fileLogging.WriteLine("CI SDK: Database settings set");
                 }
@@ -147,7 +150,7 @@ namespace Capa_Error_Explorer_Gui
             {
                 // Show msgbox with details
                 string currentErrorType = dataGridView1.Rows[e.RowIndex].Cells["CurrentErrorType"].Value.ToString();
-                Form3 form3 = new Form3(packageName, packageVersion, currentErrorType);
+                Form3 form3 = new Form3(packageName, packageVersion, currentErrorType, cmpId);
                 form3.Show();
             }
         }

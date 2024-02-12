@@ -33,6 +33,7 @@ namespace Capa_Error_Explorer_Gui
             dataGridView1 = new DataGridView();
             label1 = new Label();
             comboBoxManagementPoint = new ComboBox();
+            buttonExcludePck = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -79,15 +80,27 @@ namespace Capa_Error_Explorer_Gui
             comboBoxManagementPoint.TabIndex = 3;
             comboBoxManagementPoint.SelectionChangeCommitted += comboBoxManagementPoint_SelectionChangeCommitted;
             // 
+            // buttonExcludePck
+            // 
+            buttonExcludePck.Location = new Point(12, 12);
+            buttonExcludePck.Name = "buttonExcludePck";
+            buttonExcludePck.Size = new Size(118, 23);
+            buttonExcludePck.TabIndex = 4;
+            buttonExcludePck.Text = "Exclude package";
+            buttonExcludePck.UseVisualStyleBackColor = true;
+            buttonExcludePck.Click += buttonExcludePck_Click;
+            // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1102, 450);
+            Controls.Add(buttonExcludePck);
             Controls.Add(comboBoxManagementPoint);
             Controls.Add(label1);
             Controls.Add(dataGridView1);
             Controls.Add(buttonRefresh);
+            ForeColor = SystemColors.ControlText;
             Name = "FormMain";
             Text = "Capa Error Explorer";
             Load += FormMain_Load;
@@ -103,5 +116,6 @@ namespace Capa_Error_Explorer_Gui
         private DataGridView dataGridView1;
         private Label label1;
         private ComboBox comboBoxManagementPoint;
+        private Button buttonExcludePck;
     }
 }
