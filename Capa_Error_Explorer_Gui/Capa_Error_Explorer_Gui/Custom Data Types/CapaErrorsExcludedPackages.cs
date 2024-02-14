@@ -11,6 +11,7 @@ namespace Capa_Error_Explorer
         public string PackageName { get; set; }
         public string PackageVersion { get; set; }
         public bool IsExcluded { get; set; }
-        public int PackageID { get; set; }
+        public Int16 Type { get; set; }
+        public string TypePrettie { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace Capa_Error_Explorer_Gui
         internal GlobalSettings globalSettings = new GlobalSettings();
         internal ErrorDB errorDB = new ErrorDB();
         internal FileLogging fileLogging = new FileLogging();
-        internal List<CapaErrorSummary> capaErrorSummary = new List<CapaErrorSummary>();
+        internal List<CapaErrorSummary> capaErrorSummary;
         internal string cmpId = "All";
 
         //TODO: Add a way to exclude packages from the summary
@@ -36,8 +36,7 @@ namespace Capa_Error_Explorer_Gui
 
             this.AddColumnsToGridView();
             this.AddDataToGridView();
-            dataGridView1.Sort(dataGridView1.Columns["TotalErrorCount"], ListSortDirection.Descending);
-            dataGridView1.Columns["PackageName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            this.MakeDataGridViewPretty();
         }
 
         private void FormMain_Resize(object sender, EventArgs e)
@@ -68,6 +67,12 @@ namespace Capa_Error_Explorer_Gui
             #endregion
         }
 
+        public void MakeDataGridViewPretty()
+        {
+            dataGridView1.Sort(dataGridView1.Columns["TotalErrorCount"], ListSortDirection.Descending);
+            dataGridView1.Columns["PackageName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+        }
+
         private void AddColumnsToGridView()
         {
             dataGridView1.Columns.Add("PackageName", "Package Name");
@@ -79,13 +84,18 @@ namespace Capa_Error_Explorer_Gui
             dataGridView1.Columns.Add("TotalErrorCount", "Total Error Count");
             dataGridView1.Columns.Add("TotalCancelledCount", "Total Cancelled Count");
         }
-        private void AddDataToGridView()
+        public void AddDataToGridView()
         {
             dataGridView1.Rows.Clear();
             foreach (CapaErrorSummary capaError in capaErrorSummary)
             {
                 dataGridView1.Rows.Add(capaError.PackageName, capaError.PackageVersion, capaError.TotalUnits, capaError.StatusInstalledCount, capaError.StatusFailedCount, capaError.OtherStatusCount, capaError.TotalErrorCount, capaError.TotalCancelledCount);
             }
+        }
+
+        public void RemoveAllDataFromGridView()
+        {
+            dataGridView1.Rows.Clear();
         }
 
         private void buttonRefresh_Click(object sender, EventArgs e)
@@ -158,7 +168,7 @@ namespace Capa_Error_Explorer_Gui
 
         private void buttonExcludePck_Click(object sender, EventArgs e)
         {
-            FormExcludePackages formExcludePackages = new FormExcludePackages();
+            FormExcludePackages formExcludePackages = new FormExcludePackages(this);
             formExcludePackages.Show();
             this.Hide();
         }

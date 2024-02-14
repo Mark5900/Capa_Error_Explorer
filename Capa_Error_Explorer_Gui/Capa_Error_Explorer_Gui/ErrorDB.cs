@@ -15,11 +15,12 @@ namespace Capa_Error_Explorer_Gui
         public List<CapaErrorSummary> GetCapaErrorSummary(string cmpId = "All")
         {
             //TODO: Do not include excluded packages
-            string query = "Select \r\n\tPackageID\r\n\t,COUNT(*) AS TotalUnits\r\n\t,SUM(CASE WHEN [Status] = 'Installed' THEN 1 ELSE 0 END) AS StatusInstalledCount\r\n\t,SUM(CASE WHEN [Status] = 'Failed' THEN 1 ELSE 0 END) AS StatusFailedCount\r\n\t,SUM(CASE WHEN [Status] != 'Installed' AND [Status] != 'Failed' THEN 1 ELSE 0 END) AS OtherStatusCount\r\n\t,MAX(PackageName) AS PackageName\r\n\t,MAX(PackageVersion) AS PackageVersion\r\n\t,SUM([ErrorCount]) AS TotalErrorCount\r\n\t,SUM([CancelledCount]) AS TotalCancelledCount\r\nFrom Capa_Errors\r\nGROUP BY PackageID";
+            //TODO: GROUP BY type (Computer/User)
+            string query = "Select  PackageID ,COUNT(*) AS TotalUnits ,SUM(CASE WHEN [Status] = 'Installed' THEN 1 ELSE 0 END) AS StatusInstalledCount ,SUM(CASE WHEN [Status] = 'Failed' THEN 1 ELSE 0 END) AS StatusFailedCount ,SUM(CASE WHEN [Status] != 'Installed' AND [Status] != 'Failed' THEN 1 ELSE 0 END) AS OtherStatusCount ,MAX(PackageName) AS PackageName ,MAX(PackageVersion) AS PackageVersion ,SUM([ErrorCount]) AS TotalErrorCount ,SUM([CancelledCount]) AS TotalCancelledCount From Capa_Errors GROUP BY PackageID";
 
             if (cmpId != "All")
             {
-                query = $"Select \r\n\tPackageID\r\n\t,COUNT(*) AS TotalUnits\r\n\t,SUM(CASE WHEN [Status] = 'Installed' THEN 1 ELSE 0 END) AS StatusInstalledCount\r\n\t,SUM(CASE WHEN [Status] = 'Failed' THEN 1 ELSE 0 END) AS StatusFailedCount\r\n\t,SUM(CASE WHEN [Status] != 'Installed' AND [Status] != 'Failed' THEN 1 ELSE 0 END) AS OtherStatusCount\r\n\t,MAX(PackageName) AS PackageName\r\n\t,MAX(PackageVersion) AS PackageVersion\r\n\t,SUM([ErrorCount]) AS TotalErrorCount\r\n\t,SUM([CancelledCount]) AS TotalCancelledCount\r\nFrom Capa_Errors\r\nWHERE CMPID = {cmpId}\r\nGROUP BY PackageID";
+                query = $"Select  PackageID ,COUNT(*) AS TotalUnits ,SUM(CASE WHEN [Status] = 'Installed' THEN 1 ELSE 0 END) AS StatusInstalledCount ,SUM(CASE WHEN [Status] = 'Failed' THEN 1 ELSE 0 END) AS StatusFailedCount ,SUM(CASE WHEN [Status] != 'Installed' AND [Status] != 'Failed' THEN 1 ELSE 0 END) AS OtherStatusCount ,MAX(PackageName) AS PackageName ,MAX(PackageVersion) AS PackageVersion ,SUM([ErrorCount]) AS TotalErrorCount ,SUM([CancelledCount]) AS TotalCancelledCount From Capa_Errors WHERE CMPID = {cmpId} GROUP BY PackageID";
             }
 
             List<CapaErrorSummary> capaErrorSummary = new List<CapaErrorSummary>();
@@ -69,10 +70,10 @@ namespace Capa_Error_Explorer_Gui
 
         public List<CapaErrorTypeSummary> GetCapaErrorTypeSummary(string PackageName, string PackageVersion, string cmpId)
         {
-            string query = $"SELECT CurrentErrorType,\r\n\t[Status],\r\n\tCOUNT(*) AS TotalUnits,\r\n\tSUM([RunCount]) AS TotalRunCount,\r\n\tSUM([ErrorCount]) AS TotalErrorCount,\r\n\tSUM([CancelledCount]) AS TotalCancelledCount,\r\n\tMAX([PackageRecurrence]) AS PackageRecurrence\r\nFROM Capa_Errors\r\nWHERE PackageName = '{PackageName}'\r\n\tAND PackageVersion = '{PackageVersion}'\r\n\tAND [Status] in ('Failed', 'Cancel', 'NotCompliant', 'PostFailed', 'UninstallFailed')\r\nGROUP BY CurrentErrorType, [Status]";
+            string query = $"SELECT CurrentErrorType, [Status], COUNT(*) AS TotalUnits, SUM([RunCount]) AS TotalRunCount, SUM([ErrorCount]) AS TotalErrorCount, SUM([CancelledCount]) AS TotalCancelledCount, MAX([PackageRecurrence]) AS PackageRecurrence FROM Capa_Errors WHERE PackageName = '{PackageName}' AND PackageVersion = '{PackageVersion}' AND [Status] in ('Failed', 'Cancel', 'NotCompliant', 'PostFailed', 'UninstallFailed') GROUP BY CurrentErrorType, [Status]";
             if (cmpId != "All")
             {
-                query = $"SELECT CurrentErrorType,\r\n\t[Status],\r\n\tCOUNT(*) AS TotalUnits,\r\n\tSUM([RunCount]) AS TotalRunCount,\r\n\tSUM([ErrorCount]) AS TotalErrorCount,\r\n\tSUM([CancelledCount]) AS TotalCancelledCount,\r\n\tMAX([PackageRecurrence]) AS PackageRecurrence\r\nFROM Capa_Errors\r\nWHERE PackageName = '{PackageName}'\r\n\tAND PackageVersion = '{PackageVersion}'\r\n\tAND CMPID = {cmpId}\r\n\tAND [Status] in ('Failed', 'Cancel', 'NotCompliant', 'PostFailed', 'UninstallFailed')\r\nGROUP BY CurrentErrorType, [Status]";
+                query = $"SELECT CurrentErrorType, [Status], COUNT(*) AS TotalUnits, SUM([RunCount]) AS TotalRunCount, SUM([ErrorCount]) AS TotalErrorCount, SUM([CancelledCount]) AS TotalCancelledCount, MAX([PackageRecurrence]) AS PackageRecurrence FROM Capa_Errors WHERE PackageName = '{PackageName}' AND PackageVersion = '{PackageVersion}' AND CMPID = {cmpId} AND [Status] in ('Failed', 'Cancel', 'NotCompliant', 'PostFailed', 'UninstallFailed') GROUP BY CurrentErrorType, [Status]";
             }
 
             List<CapaErrorTypeSummary> capaErrorTypeSummary = new List<CapaErrorTypeSummary>();
@@ -119,10 +120,10 @@ namespace Capa_Error_Explorer_Gui
 
         public List<CapaError> GetCapaErrors(string packageName, string packageVersion, string currentErrorType, string cmpId)
         {
-            string query = $"SELECT [UnitID]\r\n      ,[PackageID]\r\n      ,[Status]\r\n      ,[LastRunDate]\r\n      ,[RunCount]\r\n      ,[CurrentErrorType]\r\n      ,[UnitUUID]\r\n      ,[PackageGUID]\r\n      ,[UnitName]\r\n      ,[PackageName]\r\n      ,[PackageVersion]\r\n      ,[CMPID]\r\n      ,[TYPE]\r\n      ,[ErrorCount]\r\n      ,[LastErrorType]\r\n      ,[CancelledCount]\r\n      ,[PackageRecurrence]\r\n  FROM [Capa_Errors]\r\n WHERE [PackageName] = '{packageName}'\r\n   AND [PackageVersion] = '{packageVersion}'\r\n   AND [CurrentErrorType] = '{currentErrorType}'\r\n   AND [Status] in ('Failed', 'Cancel', 'NotCompliant', 'PostFailed', 'UninstallFailed')\r\n ORDER BY [LastRunDate] DESC";
+            string query = $"SELECT [UnitID]       ,[PackageID]       ,[Status]       ,[LastRunDate]       ,[RunCount]       ,[CurrentErrorType]       ,[UnitUUID]       ,[PackageGUID]       ,[UnitName]       ,[PackageName]       ,[PackageVersion]       ,[CMPID]       ,[TYPE]       ,[ErrorCount]       ,[LastErrorType]       ,[CancelledCount]       ,[PackageRecurrence]   FROM [Capa_Errors]  WHERE [PackageName] = '{packageName}'    AND [PackageVersion] = '{packageVersion}'    AND [CurrentErrorType] = '{currentErrorType}'    AND [Status] in ('Failed', 'Cancel', 'NotCompliant', 'PostFailed', 'UninstallFailed')  ORDER BY [LastRunDate] DESC";
             if (cmpId != "All")
             {
-                query = $"SELECT [UnitID]\r\n      ,[PackageID]\r\n      ,[Status]\r\n      ,[LastRunDate]\r\n      ,[RunCount]\r\n      ,[CurrentErrorType]\r\n      ,[UnitUUID]\r\n      ,[PackageGUID]\r\n      ,[UnitName]\r\n      ,[PackageName]\r\n      ,[PackageVersion]\r\n      ,[CMPID]\r\n      ,[TYPE]\r\n      ,[ErrorCount]\r\n      ,[LastErrorType]\r\n      ,[CancelledCount]\r\n      ,[PackageRecurrence]\r\n  FROM [Capa_Errors]\r\n WHERE [PackageName] = '{packageName}'\r\n   AND [PackageVersion] = '{packageVersion}'\r\n   AND [CurrentErrorType] = '{currentErrorType}'\r\n   AND [CMPID] = {cmpId}\r\n   AND [Status] in ('Failed', 'Cancel', 'NotCompliant', 'PostFailed', 'UninstallFailed')\r\n ORDER BY [LastRunDate] DESC";
+                query = $"SELECT [UnitID]       ,[PackageID]       ,[Status]       ,[LastRunDate]       ,[RunCount]       ,[CurrentErrorType]       ,[UnitUUID]       ,[PackageGUID]       ,[UnitName]       ,[PackageName]       ,[PackageVersion]       ,[CMPID]       ,[TYPE]       ,[ErrorCount]       ,[LastErrorType]       ,[CancelledCount]       ,[PackageRecurrence]   FROM [Capa_Errors]  WHERE [PackageName] = '{packageName}'    AND [PackageVersion] = '{packageVersion}'    AND [CurrentErrorType] = '{currentErrorType}'    AND [CMPID] = {cmpId}    AND [Status] in ('Failed', 'Cancel', 'NotCompliant', 'PostFailed', 'UninstallFailed')  ORDER BY [LastRunDate] DESC";
             }
 
             List<CapaError> capaError = new List<CapaError>();
@@ -191,7 +192,7 @@ namespace Capa_Error_Explorer_Gui
 
         public List<CapaErrorsExcludedPackages> GetCapaErrorsExcludedPackages()
         {
-            string query = "SELECT Capa_Errors.PackageName,\r\n\tCapa_Errors.PackageVersion,\r\n\tCapa_Errors.PackageID,\r\n\tCAST(CASE\r\n\t\tWHEN MAX(Capa_Errors_Excluded_GUI.PackageID) IS NOT NULL THEN 1\r\n\t\tELSE 0\r\n\tEND AS BIT)AS IsExcluded\r\nFROM\r\n\tCapa_Errors\r\nLEFT JOIN\r\n\tCapa_Errors_Excluded_GUI ON Capa_Errors.PackageID = Capa_Errors_Excluded_GUI.PackageID\r\nGROUP BY \r\n\tCapa_Errors.PackageName,\r\n\tCapa_Errors.PackageVersion,\r\n\tCapa_Errors.PackageID";
+            string query = "SELECT Capa_Errors.PackageName, Capa_Errors.PackageVersion, Capa_Errors.[TYPE], CAST(CASE WHEN MAX(Capa_Errors_Excluded_GUI.PackageName) IS NOT NULL THEN 1 ELSE 0 END AS BIT)AS IsExcluded, CAST (CASE WHEN MAX(Capa_Errors.[TYPE]) = 1 THEN 'Computer' ELSE 'User' END AS  [varchar](8)) AS TypePrettie FROM Capa_Errors LEFT JOIN Capa_Errors_Excluded_GUI ON  Capa_Errors.PackageName = Capa_Errors_Excluded_GUI.PackageName AND Capa_Errors.PackageVersion = Capa_Errors_Excluded_GUI.PackageVersion AND Capa_Errors.[TYPE] = Capa_Errors_Excluded_GUI.[TYPE] GROUP BY  Capa_Errors.PackageName, Capa_Errors.PackageVersion, Capa_Errors.[TYPE]";
 
             List<CapaErrorsExcludedPackages> capaErrorsExcludedPackages = new List<CapaErrorsExcludedPackages>();
             CapaErrorsExcludedPackages capaErrorsExcludedPackagesItem;
@@ -212,8 +213,9 @@ namespace Capa_Error_Explorer_Gui
 
                                 capaErrorsExcludedPackagesItem.PackageName = reader.GetString(0);
                                 capaErrorsExcludedPackagesItem.PackageVersion = reader.GetString(1);
-                                capaErrorsExcludedPackagesItem.PackageID = reader.GetInt32(2);
+                                capaErrorsExcludedPackagesItem.Type = reader.GetInt16(2);
                                 capaErrorsExcludedPackagesItem.IsExcluded = reader.GetBoolean(3);
+                                capaErrorsExcludedPackagesItem.TypePrettie = reader.GetString(4);
 
                                 capaErrorsExcludedPackages.Add(capaErrorsExcludedPackagesItem);
                             }
@@ -229,6 +231,50 @@ namespace Capa_Error_Explorer_Gui
             {
                 FileLogging.WriteErrorLine($"ErrorDB.capaErrorsExcludedPackages: {ex.Message}");
                 return null;
+            }
+        }
+
+        public void SaveCapaErrorsExcludedPackages(List<CapaErrorsExcludedPackages> capaErrorsExcludedPackages)
+        {
+            int countAdded = 0;
+            int countDeleted = 0;
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this.sConnectionString))
+                {
+                    connection.Open();
+
+                    foreach (CapaErrorsExcludedPackages item in capaErrorsExcludedPackages)
+                    {
+                        if (item.IsExcluded)
+                        {
+                            string query = $"INSERT INTO Capa_Errors_Excluded_GUI (PackageName, PackageVersion, [TYPE]) VALUES ('{item.PackageName}', '{item.PackageVersion}', {item.Type})";
+                            using (SqlCommand command = new SqlCommand(query, connection))
+                            {
+                                command.ExecuteNonQuery();
+                            }
+
+                            countAdded++;
+                        }
+                        else
+                        {
+                            string query = $"DELETE FROM Capa_Errors_Excluded_GUI WHERE PackageName = '{item.PackageName}' AND PackageVersion = '{item.PackageVersion}' AND [TYPE] = {item.Type}";
+                            using (SqlCommand command = new SqlCommand(query, connection))
+                            {
+                                command.ExecuteNonQuery();
+                            }
+
+                            countDeleted++;
+                        }
+                    }
+                }
+
+                FileLogging.WriteLine($"ErrorDB.SaveCapaErrorsExcludedPackages: {countAdded} added, {countDeleted} deleted");
+            }
+            catch (Exception ex)
+            {
+                FileLogging.WriteErrorLine($"ErrorDB.capaErrorsExcludedPackages: {ex.Message}");
             }
         }
     }

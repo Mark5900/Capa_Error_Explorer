@@ -35,15 +35,17 @@
             // 
             // dataGridView1
             // 
+            dataGridView1.AllowUserToAddRows = false;
+            dataGridView1.AllowUserToDeleteRows = false;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Location = new Point(12, 42);
             dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(493, 396);
+            dataGridView1.Size = new Size(604, 396);
             dataGridView1.TabIndex = 0;
             // 
             // button1
             // 
-            button1.Location = new Point(430, 12);
+            button1.Location = new Point(541, 12);
             button1.Name = "button1";
             button1.Size = new Size(75, 23);
             button1.TabIndex = 1;
@@ -55,12 +57,14 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(517, 450);
+            ClientSize = new Size(628, 450);
             Controls.Add(button1);
             Controls.Add(dataGridView1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "FormExcludePackages";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Capa Error Explorer - Exclude Packages";
+            Load += FormExcludePackages_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
         }
