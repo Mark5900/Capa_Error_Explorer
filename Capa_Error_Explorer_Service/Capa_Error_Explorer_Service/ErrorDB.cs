@@ -95,7 +95,7 @@ namespace Capa_Error_Explorer_Service
 
             if (string.IsNullOrEmpty(capaErrorFromErrorDB.CurrentErrorType) == false)
             {
-                capaErrorFromErrorDB.LastErrorType = capaErrorFromErrorDB.CurrentErrorType;
+                capaErrorFromErrorDB.LastErrorType = capaErrorFromErrorDB.CurrentErrorType.Replace("'", "''");
             }
 
             capaErrorFromErrorDB.Status = capaErrorNewData.Status;
@@ -103,7 +103,7 @@ namespace Capa_Error_Explorer_Service
             capaErrorFromErrorDB.Log = capaErrorNewData.Log;
             capaErrorFromErrorDB.RunCount = capaErrorFromErrorDB.RunCount + 1;
 
-            switch (capaErrorNewData.Status.ToLower())
+            switch (capaErrorNewData.Status.ToLower().Trim())
             {
                 case "cancel":
                 case "uninstallcancel":

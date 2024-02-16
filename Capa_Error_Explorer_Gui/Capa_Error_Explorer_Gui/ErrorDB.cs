@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Capa_Error_Explorer;
+using static System.ComponentModel.Design.ObjectSelectorEditor;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Windows.Forms;
 
 namespace Capa_Error_Explorer_Gui
 {
@@ -14,13 +17,59 @@ namespace Capa_Error_Explorer_Gui
     {
         public List<CapaErrorSummary> GetCapaErrorSummary(string cmpId = "All")
         {
-            //TODO: Do not include excluded packages
-            //TODO: GROUP BY type (Computer/User)
-            string query = "Select  PackageID ,COUNT(*) AS TotalUnits ,SUM(CASE WHEN [Status] = 'Installed' THEN 1 ELSE 0 END) AS StatusInstalledCount ,SUM(CASE WHEN [Status] = 'Failed' THEN 1 ELSE 0 END) AS StatusFailedCount ,SUM(CASE WHEN [Status] != 'Installed' AND [Status] != 'Failed' THEN 1 ELSE 0 END) AS OtherStatusCount ,MAX(PackageName) AS PackageName ,MAX(PackageVersion) AS PackageVersion ,SUM([ErrorCount]) AS TotalErrorCount ,SUM([CancelledCount]) AS TotalCancelledCount From Capa_Errors GROUP BY PackageID";
+            string query = @"SELECT 
+                    Capa_Errors.PackageID, 
+                    COUNT(*) AS TotalUnits, 
+                    SUM(CASE WHEN Capa_Errors.[Status] = 'Installed' THEN 1 ELSE 0 END) AS StatusInstalledCount, 
+                    SUM(CASE WHEN Capa_Errors.[Status] = 'Failed' THEN 1 ELSE 0 END) AS StatusFailedCount, 
+                    SUM(CASE WHEN Capa_Errors.[Status] != 'Installed' AND Capa_Errors.[Status] != 'Failed' THEN 1 ELSE 0 END) AS OtherStatusCount, 
+                    MAX(Capa_Errors.PackageName) AS PackageName, 
+                    MAX(Capa_Errors.PackageVersion) AS PackageVersion, 
+                    SUM(Capa_Errors.[ErrorCount]) AS TotalErrorCount, 
+                    SUM(Capa_Errors.[CancelledCount]) AS TotalCancelledCount,
+					CASE WHEN Capa_Errors.[TYPE] = 1 THEN 'Computer' ELSE 'User' END AS PrettyType
+                FROM 
+                    Capa_Errors 
+                WHERE NOT EXISTS (
+                    SELECT 1 
+                    FROM Capa_Errors_Excluded_GUI 
+                    WHERE Capa_Errors.PackageName = Capa_Errors_Excluded_GUI.PackageName 
+                        AND Capa_Errors.PackageVersion = Capa_Errors_Excluded_GUI.PackageVersion 
+                        AND Capa_Errors.TYPE = Capa_Errors_Excluded_GUI.TYPE
+                ) 
+                GROUP BY 
+                    CASE WHEN Capa_Errors.[TYPE] = 1 THEN 'Computer' ELSE 'User' END,
+                    Capa_Errors.PackageID";
 
             if (cmpId != "All")
             {
-                query = $"Select  PackageID ,COUNT(*) AS TotalUnits ,SUM(CASE WHEN [Status] = 'Installed' THEN 1 ELSE 0 END) AS StatusInstalledCount ,SUM(CASE WHEN [Status] = 'Failed' THEN 1 ELSE 0 END) AS StatusFailedCount ,SUM(CASE WHEN [Status] != 'Installed' AND [Status] != 'Failed' THEN 1 ELSE 0 END) AS OtherStatusCount ,MAX(PackageName) AS PackageName ,MAX(PackageVersion) AS PackageVersion ,SUM([ErrorCount]) AS TotalErrorCount ,SUM([CancelledCount]) AS TotalCancelledCount From Capa_Errors WHERE CMPID = {cmpId} GROUP BY PackageID";
+                query = @$"SELECT 
+                Capa_Errors.PackageID,  
+                COUNT(*) AS TotalUnits,
+                SUM(CASE WHEN Capa_Errors.[Status] = 'Installed' THEN 1 ELSE 0 END) AS StatusInstalledCount,
+                SUM(CASE WHEN Capa_Errors.[Status] = 'Failed' THEN 1 ELSE 0 END) AS StatusFailedCount,
+                SUM(CASE WHEN Capa_Errors.[Status] != 'Installed' AND Capa_Errors.[Status] != 'Failed' THEN 1 ELSE 0 END) AS OtherStatusCount,
+                MAX(Capa_Errors.PackageName) AS PackageName,
+                MAX(Capa_Errors.PackageVersion) AS PackageVersion,
+                SUM(Capa_Errors.[ErrorCount]) AS TotalErrorCount,
+                SUM(Capa_Errors.[CancelledCount]) AS TotalCancelledCount,
+				CASE WHEN Capa_Errors.[TYPE] = 1 THEN 'Computer' ELSE 'User' END AS PrettyType
+            FROM
+                Capa_Errors
+            WHERE
+                Capa_Errors.CMPID = 2
+                AND NOT EXISTS(
+                    SELECT 1
+                    FROM
+                        Capa_Errors_Excluded_GUI
+                    WHERE
+                        Capa_Errors.PackageName = Capa_Errors_Excluded_GUI.PackageName
+                        AND Capa_Errors.PackageVersion = Capa_Errors_Excluded_GUI.PackageVersion
+                        AND Capa_Errors.TYPE = Capa_Errors_Excluded_GUI.TYPE
+                )
+            GROUP BY
+                CASE WHEN Capa_Errors.[TYPE] = 1 THEN 'Computer' ELSE 'User' END,
+                Capa_Errors.PackageID";
             }
 
             List<CapaErrorSummary> capaErrorSummary = new List<CapaErrorSummary>();
@@ -49,6 +98,7 @@ namespace Capa_Error_Explorer_Gui
                                 capaErrorSummaryItem.PackageVersion = reader.GetString(6);
                                 capaErrorSummaryItem.TotalErrorCount = reader.GetInt32(7);
                                 capaErrorSummaryItem.TotalCancelledCount = reader.GetInt32(8);
+                                capaErrorSummaryItem.Type = reader.GetString(9);
 
                                 capaErrorSummary.Add(capaErrorSummaryItem);
                             }

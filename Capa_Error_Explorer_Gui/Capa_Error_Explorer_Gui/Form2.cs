@@ -83,9 +83,9 @@ namespace Capa_Error_Explorer_Gui
             //TODO: Add code to rerun package
             try
             {
-
+                /*
                 SDK oSDK = new SDK();
-                bool bStatus = true;
+               bool bStatus = true;
 
                 bStatus = oSDK.SetDatabaseSettings(this.globalSettings.SQLServer, this.globalSettings.CapaSQLDB, false);
                 if (bStatus == false)
@@ -115,7 +115,21 @@ namespace Capa_Error_Explorer_Gui
                 {
                     throw new Exception("CI SDK: Error setting unit package status");
                 }
+                */
 
+                string sSelectedTypes;
+                foreach (DataGridViewRow row in dataGridView1.Rows)
+                {
+                    if (Convert.ToBoolean(row.Cells["Select"].Value) == true)
+                    {
+                        sSelectedTypes = row.Cells["CurrentErrorType"].Value.ToString();
+                    }
+                    else
+                    {
+                        // Skip row if not selected
+                        continue;
+                    }
+                }
 
             }
             catch (Exception ex)

@@ -12,8 +12,6 @@ namespace Capa_Error_Explorer_Gui
         internal List<CapaErrorSummary> capaErrorSummary;
         internal string cmpId = "All";
 
-        //TODO: Add a way to exclude packages from the summary
-
         public FormMain()
         {
             InitializeComponent();
@@ -83,13 +81,14 @@ namespace Capa_Error_Explorer_Gui
             dataGridView1.Columns.Add("OtherStatusCount", "Other Status Count");
             dataGridView1.Columns.Add("TotalErrorCount", "Total Error Count");
             dataGridView1.Columns.Add("TotalCancelledCount", "Total Cancelled Count");
+            dataGridView1.Columns.Add("Type", "Type");
         }
         public void AddDataToGridView()
         {
             dataGridView1.Rows.Clear();
             foreach (CapaErrorSummary capaError in capaErrorSummary)
             {
-                dataGridView1.Rows.Add(capaError.PackageName, capaError.PackageVersion, capaError.TotalUnits, capaError.StatusInstalledCount, capaError.StatusFailedCount, capaError.OtherStatusCount, capaError.TotalErrorCount, capaError.TotalCancelledCount);
+                dataGridView1.Rows.Add(capaError.PackageName, capaError.PackageVersion, capaError.TotalUnits, capaError.StatusInstalledCount, capaError.StatusFailedCount, capaError.OtherStatusCount, capaError.TotalErrorCount, capaError.TotalCancelledCount, capaError.Type);
             }
         }
 
@@ -171,6 +170,11 @@ namespace Capa_Error_Explorer_Gui
             FormExcludePackages formExcludePackages = new FormExcludePackages(this);
             formExcludePackages.Show();
             this.Hide();
+        }
+
+        public string GetCmpId()
+        {
+            return this.cmpId;
         }
     }
 }

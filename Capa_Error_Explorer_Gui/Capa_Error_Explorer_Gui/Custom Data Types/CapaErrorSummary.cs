@@ -17,5 +17,6 @@ namespace Capa_Error_Explorer_Gui
         public string PackageVersion { get; set; }
         public int TotalErrorCount { get; set; }
         public int TotalCancelledCount { get; set; }
+        public string Type { get; set; }
     }
 }

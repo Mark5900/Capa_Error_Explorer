@@ -39,14 +39,45 @@ namespace Capa_Error_Explorer
             switch (this.Status.ToLower())
             {
                 case "installing":
+                case "advertised":
                 case "waiting":
                 case "postinstalling":
                 case "uninstalling":
                 case "installed":
                     break;
                 default:
-                    // TODO: Add error types and update if it is existing in db and unknown, maybe?
-                    this.CurrentErrorType = "Unknown";
+
+                    FileLogging fileLogging = new FileLogging();
+
+                    try
+                    {
+                        string firstLine = "";
+
+                        // TODO: Add error types and update if it is existing in db and unknown, maybe?
+                        using (var reader = new StringReader(this.Log))
+                        {
+                            firstLine = reader.ReadLine();
+                        }
+
+                        if (firstLine.StartsWith("JOBERROR"))
+                        {
+                            string[] sParts = firstLine.Split(" : ");
+                            this.CurrentErrorType = sParts[sParts.Length - 1];
+                        }
+                        else
+                        {
+                            this.CurrentErrorType = "Unknown";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        this.CurrentErrorType = "Unknown";
+
+                        fileLogging.WriteErrorLine($"Exception: {ex.Message}");
+                        fileLogging.WriteErrorLine($"Failed to set error type for UnitName: {this.UnitName} PackageName: {this.PackageName} PackageVersion: {this.PackageVersion}");
+                    }
+
+                    this.CurrentErrorType.Replace("'", "''");
                     break;
             }
         }

@@ -57,6 +57,10 @@ namespace Capa_Error_Explorer_Gui
             dataGridView1.Columns.Add("PackageName", "Package name");
             dataGridView1.Columns.Add("PackageVersion", "Package version");
             dataGridView1.Columns.Add("Type", "Type");
+
+            dataGridView1.Columns["PackageName"].ReadOnly = true;
+            dataGridView1.Columns["PackageVersion"].ReadOnly = true;
+            dataGridView1.Columns["Type"].ReadOnly = true;
         }
 
         private void AddDataToGridView()
@@ -124,7 +128,8 @@ namespace Capa_Error_Explorer_Gui
             }
             #endregion
 
-            formMain.capaErrorSummary = errorDB.GetCapaErrorSummary();
+            string cmpId = formMain.GetCmpId();
+            formMain.capaErrorSummary = errorDB.GetCapaErrorSummary(cmpId);
             formMain.RemoveAllDataFromGridView();
             formMain.AddDataToGridView();
             formMain.MakeDataGridViewPretty();
